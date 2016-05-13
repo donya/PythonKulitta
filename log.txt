@@ -1,0 +1,58 @@
+Start Pitch Value:
+[35, 40, 48]
+3 Voices Pitch Range:
+[(35, 55), (40, 64), (48, 73)]
+('chords:', [5, 9, 12], 0)
+Length of Chords:4
+[[60, 65, 69], [59, 67, 74], [55, 60, 76], [48, 67, 76]]
+pitch:60
+pitch:65
+pitch:69
+pitch:60
+pitch:65
+pitch:69
+pitch:59
+pitch:67
+pitch:74
+pitch:59
+pitch:67
+pitch:74
+pitch:55
+pitch:60
+pitch:76
+pitch:55
+pitch:60
+pitch:76
+pitch:48
+pitch:67
+pitch:76
+pitch:48
+pitch:67
+pitch:76
+midi.Pattern(format=1, resolution=220, tracks=\
+[midi.Track(\
+  [midi.NoteOnEvent(tick=0, channel=0, data=[60, 100]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[65, 100]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[69, 100]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[60, 0]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[65, 0]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[69, 0]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[59, 100]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[67, 100]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[74, 100]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[59, 0]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[67, 0]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[74, 0]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[55, 100]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[60, 100]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[76, 100]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[55, 0]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[60, 0]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[76, 0]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[48, 100]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[67, 100]),
+   midi.NoteOnEvent(tick=0, channel=0, data=[76, 100]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[48, 0]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[67, 0]),
+   midi.NoteOffEvent(tick=57, channel=0, data=[76, 0]),
+   midi.EndOfTrackEvent(tick=1, data=[])])])
