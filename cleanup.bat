@@ -1,0 +1,2 @@
+del *.pyc
+del *.mid

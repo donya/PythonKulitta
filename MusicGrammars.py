@@ -1,5 +1,9 @@
+# Python port of MusicGrammars.lhs
+# Authors: Wen Sheng and Donya Quick
+
 from fractions import Fraction
 from PTGG import NT
+from copy import deepcopy
 
 class Mode:
     MAJOR = "Major"
@@ -43,6 +47,11 @@ class MP:
         self.key = key
         self.onset = onset
         # print("dur:", self.dur)
+    def __str__(self):
+        myStr = "("+str(self.dur)+")"
+        return myStr
+    def __repr__(self):
+        return str(self)
 
 
 def isMaj(mode):
@@ -55,7 +64,9 @@ def isMin(mode):
 
 
 def dFac(x, mp):
-    mp.dur *= x
+    mp2 = deepcopy(mp)
+    mp2.dur = mp2.dur * x
+    return mp2
 
 def getScale(mode):
     if mode == Mode.MINOR:
@@ -72,9 +83,10 @@ iv = lambda p: NT((CType.IV, p))
 v = lambda p: NT((CType.V, p))
 vi = lambda p: NT((CType.VI, p))
 vii = lambda p: NT((CType.VII, p))
+
+
 def h(p):
-    dFac(0.5, p)
-    return p
+    return dFac(0.5, p)
 
 # # test
 # p = MP()
