@@ -97,6 +97,7 @@ def otEq(c1,c2): return normToEqRel(normOT,c1,c2)
 def ptEq(c1,c2): return normToEqRel(normPT,c1,c2)
 def pcEq(c1,c2): return normToEqRel(normPC,c1,c2)
 def tcEq(c1,c2): return normToEqRel(normTC,c1,c2)
+def opcEq(c1,c2): return normToEqRel(normOPC, c1, c2)
 
 # Equivalence relations requiring other algorithms
 
@@ -106,7 +107,9 @@ def tcEq(c1,c2): return normToEqRel(normTC,c1,c2)
 #=====================================================
 # QUOTIENT SPACE IMPLEMENTATION
 
-def partition(eqRel,items):
+# Quotient space partition implementation mirroring the Haskell definition.
+# This has a worst case of O(n^2).
+def partitionOld(eqRel,items):
     if items==[]:
         return []
     else:
@@ -116,6 +119,28 @@ def partition(eqRel,items):
         else:
             otherClasses = partition(eqRel, otherItems)
             return [eqClass]+otherClasses
+
+# A non-recursive approach to partitioning the quotient space
+def partition(eqRel, items):
+    eqClasses = []
+    for x in items:
+        if len(eqClasses) == 0:
+            eqClasses.append([x])
+            print(x, "added to its own class")
+        else:
+            i = 0
+            n = len(eqClasses)
+            while i<n and i >=0:
+                if eqRel(x, eqClasses[i][0]):
+                    eqClasses[i].append(x)
+                    print(x, "added to equivalence class ", i)
+                    i = -1 # exit condition 1: less than zero, class found
+                else:
+                    i += 1 # exi condition 2: exceed n (no class found)
+            if i>=n:
+                eqClasses.append([x])
+                print (x, "added to its own class")
+    return eqClasses
 
 def split(pred, items):
     predYes = []
