@@ -11,6 +11,14 @@
 # ===============================================================================
 
 from copy import deepcopy
+import midi
+
+# For throwing errors
+class CustomException(Exception):
+    def __init__(self, value):
+        self.parameter = value
+    def __str__(self):
+        return repr(self.parameter)
 
 
 # =================================================================
@@ -110,7 +118,7 @@ class Instrument:
             self.name = gmName(self.patch) # need to update this - should look up from patch
         elif isinstance(value, basestring):
             self.name = value
-            self.patch = 0 # need to update this - should look up from name
+            self.patch = 0 # TO-DO: needs to look up patch number from name
     def __str__(self):
         return (self.name+'('+str(self.patch[0])+')')
     def __repr__(self):
@@ -122,7 +130,7 @@ def gmName(patch):
     elif patch[1]:
         return "DRUMS"
     else:
-        return "INSTR" # NEED TO UPDATE WITH ACTUAL GM LOOKUP
+        return "INSTR" # TO-DO: this should eventually return an actual patch name
 
 
 # =================================================================
@@ -150,8 +158,7 @@ def dur(x):
         else:
             return dur(x.tree)
     else:
-        print ("Unrecognized musical structure: "+str(x))
-        raise
+        raise CustomException("Unrecognized musical structure: "+str(x))
 
 # The line function build a "melody" with Seq constructors
 # out of a list of music substructures. Values are NOT copied.
@@ -189,8 +196,7 @@ def mMap(f, x):
     elif (x.__class__.__name__ == 'Modify'):
         mMap(f, x.tree)
     else:
-        print ("Unrecognized musical structure: "+str(x))
-        raise
+        raise CustomException("Unrecognized musical structure: "+str(x))
 
 
 # The mMapDur function is not found in Haskell Euterpea but may prove useful.
@@ -211,8 +217,7 @@ def mMapAll(f, x):
     elif (x.__class__.__name__ == 'Modify'):
         mMapAll(f, x.tree)
     else:
-        print ("Unrecognized musical structure: "+str(x))
-        raise
+        raise CustomException("Unrecognized musical structure: "+str(x))
 
 
 # transpose directly alters the Notes of the supplied structure.
@@ -248,11 +253,9 @@ def adjustVolume(x, amount):
 def checkMidiCompatible(x):
     def f(xNote):
         if xNote.vol < 0 or xNote.vol > 127:
-            print ("Invalid volume found: "+str(xNote.vol))
-            raise
+            raise CustomException("Invalid volume found: "+str(xNote.vol))
         if xNote.pitch < 0 or xNote.pitch > 127:
-            print ("Invalid pitch found: "+str(xNote.pitch))
-            raise
+            raise CustomException("Invalid pitch found: "+str(xNote.pitch))
     mMap (f,x)
 
 def forceMidiCompatible(x):
@@ -307,7 +310,7 @@ def applyTempoInPlace(x, tempo=1.0):
             x.tree = applyTempo(x.tree, tempo)
             return x
     else:
-        raise Exception("Unrecognized musical structure: "+str(x))
+        raise CustomException("Unrecognized musical structure: "+str(x))
 
 # MEvent is a fairly direct representation of Haskell Euterpea's MEvent type,
 # which is for event-style reasoning much like a piano roll representation.
@@ -322,7 +325,7 @@ class MEvent:
         self.vol=vol
         self.patch=patch
     def __str__(self):
-        return "MEvent("+str(self.eTime)+","+str(self.pitch)+","+str(self.dur)+","+str(self.patch)+")"
+        return "MEvent("+str(self.eTime)+","+str(self.pitch)+","+str(self.dur) +")" # +","+str(self.patch)+")"
     def __repr__(self):
         return str(self)
 
@@ -338,7 +341,7 @@ def musicToMEvents(x, currentTime=0, currentInstrument=(-1,INST)):
         return [] # rests don't contribute to an event representation
     elif (x.__class__.__name__ == 'Seq'):
         leftEvs = musicToMEvents(x.left, currentTime, currentInstrument)
-        rightEvs = musicToMEvents(x.right, dur(x.left), currentInstrument)
+        rightEvs = musicToMEvents(x.right, currentTime+dur(x.left), currentInstrument)
         return leftEvs + rightEvs # events can be concatenated, doesn't require sorting
     elif (x.__class__.__name__ == 'Par'):
         topEvs = musicToMEvents(x.top, currentTime, currentInstrument)
@@ -351,7 +354,7 @@ def musicToMEvents(x, currentTime=0, currentInstrument=(-1,INST)):
         elif (x.mod.__class__.__name__ == 'Instrument'):
             return musicToMEvents(x.tree, currentTime, x.mod.patch)
     else:
-        raise Exception("Unrecognized musical structure: "+str(x))
+        raise CustomException("Unrecognized musical structure: "+str(x))
 
 
 
@@ -384,14 +387,6 @@ class MEventMidi:
         self.patch = patch
     def typeStr(self):
         return ["OFF", "ON"][self.eType]
-    def toMidiEvent(self):
-        if self.eType==ON:
-            return None
-        elif self.eType==OFF:
-            return None
-        else:
-            print ("Unrecognized musical structure: "+str(x))
-            raise
     def __str__(self):
         return "MEMidi("+str(self.eTime)+","+str(self.pitch)+","+self.typeStr()+")"
     def __repr__(self):
@@ -400,28 +395,21 @@ class MEventMidi:
 # This function is an intermediate on the way from the MEvent-style
 # representation to MIDI format.
 def mEventsToOnOff(mevs):
-    print "Input: ", mevs
     def f(e):
         return [MEventMidi(e.eTime, ON, e.pitch, e.vol, e.patch),
                 MEventMidi(e.eTime+e.dur, OFF, e.pitch, e.vol, e.patch)]
     onOffs = []
     for e in mevs:
         onOffs = onOffs + f(e)
-    #mevsPairs = map (lambda e: f(e), mevs)
-    #print mevsPairs
-    #mevsFlat = [item for sublist in mevsPairs for item in sublist]
     return sorted(onOffs, key=lambda e: e.eTime)
 
 # This function will convert an event sequence with an eTime field into
 # a relative time stamp format (time since the last event). This is intended
 # for use with the MEventMidi type.
 def onOffToRelDur(evs):
-    currTime = 0
-    nextTime = 0
+    durs = [0] + map (lambda e: e.eTime, evs)
     for i in range(0, len(evs)):
-        nextTime = evs[i].eTime
-        evs[i].eTime = evs[i].eTime - currTime
-        currTime = nextTime
+        evs[i].eTime -= durs[i]
 
 
 def eventPatchList(mevs):
@@ -440,15 +428,110 @@ def linearPatchMap(patchList):
             pmap.append((p,9))
         else:
             if currChan==15:
-                print "ERROR: too many instruments. Only 15 unique instruments + percussion is allowed in MIDI."
+                print "ERROR: too many instruments. Only 15 unique instruments with percussion (channel 9) is allowed in MIDI."
             else:
                 pmap.append((p,currChan)) # update channel map
                 if currChan==8: currChan = 10 # step over percussion channel
                 else: currChan = currChan+1 # increment channel counter
+    return sorted(pmap, key = lambda x: x[1])
+
+# This function splits a list of MEvents (or MEventMidis) by their
+# patch number.
+def splitByPatch(mevs, pListIn=[]):
+    pList = []
+    # did we already get a patch list?
+    if len(pListIn)==0: pList = eventPatchList(mevs) # no - need to build it
+    else: pList = pListIn # use what we already were supplied
+    evsByPatch = [] # list of lists to sort events
+    unsorted = mevs # our starting list to work with
+    for p in pList: # for each patch...
+        pEvs = [x for x in unsorted if x.patch == p] # fetch the list of matching events
+        evsByPatch.append(pEvs) # add them to the outer list of lists
+        unsorted = [x for x in unsorted if x not in pEvs] # which events are left over?
+    return evsByPatch
 
 
-def splitByPatch(mevs):
-    pmap = linearPatchMap(eventPatchList(mevs))
+# Tick resolution constant
+RESOLUTION = 96
+
+# Conversion from Kulitta's durations to MIDI ticks
+def toMidiTick(dur):
+    ticks = int(round(dur * RESOLUTION * 4)) # bug fix 26-June-2016
+    return ticks
+
+def toMidiEvent(onOffMsg):
+    m = None
+    ticks = toMidiTick(onOffMsg.eTime)
+    if onOffMsg.eType==ON:
+        m = midi.NoteOnEvent(tick=ticks, velocity=int(onOffMsg.vol), pitch=int(onOffMsg.pitch))
+    else:
+        m = midi.NoteOffEvent(tick=ticks, velocity=int(onOffMsg.vol), pitch=int(onOffMsg.pitch))
+    return m
+
+
+# Converting MEvents to a MIDI file. The following function takes a music structure
+# (Music, Seq, Par, etc.) and converts it to a pythonmidi Pattern. File-writing is
+# not performed at this step.
+def mEventsToPattern(mevs):
+    pattern = midi.Pattern() # Instantiate a MIDI Pattern (contains a list of tracks)
+    pattern.resolution = RESOLUTION # Set the tick per beat resolution
+    pList = eventPatchList(mevs) # get list of active patches
+    pmap = linearPatchMap(pList) # linear patch/channel assignment
+    usedChannels = map(lambda p: p[1], pmap) # which channels are we using? (Important for drum track)
+    mevsByPatch = splitByPatch(mevs, pList) # split event list by patch
+    currChan = 0; # channel counter
+    for i in range(0, len(pmap)):
+        track = midi.Track()
+        if currChan in usedChannels: # are we using this channel?
+            # if yes, then we add events to it
+            mevsP = mevsByPatch[i] # get the relevant collection of events
+            if pmap[i][0][0] >= 0: # are we assigning an instrument?
+                track.append(midi.ProgramChangeEvent(value=pmap[i][0][0])) # set the instrument
+            mevsOnOff = mEventsToOnOff(mevsP) # convert to on/off messages
+            onOffToRelDur(mevsOnOff) # convert to relative timestamps
+            for e in mevsOnOff: # for each on/off event...
+                m = toMidiEvent(e) # turn it into a pythonmidi event
+                track.append(m) # add that event to the track
+        currChan += 1 # increment channel counter
+        track.append(midi.EndOfTrackEvent(tick=1)) # close the track (not optional!)
+        pattern.append(track) # add the track to the pattern
+    return pattern
+
+
+# Backup definition prior to adding program change event handling
+def mEventsToPatternOld(mevs):
+    pattern = midi.Pattern() # Instantiate a MIDI Pattern (contains a list of tracks)
+    pattern.resolution = RESOLUTION # Set the tick per beat resolution
+    pList = eventPatchList(mevs) # get list of active patches
+    pmap = linearPatchMap(pList) # linear patch/channel assignment
+    print pmap
+    mevsByPatch = splitByPatch(mevs, pList) # split event list by patch
+    print "Number of unique patches: ", len(mevsByPatch)
+    #for mevsP in mevsByPatch:
+    for i in range(0, len(pList)):
+        mevsP = mevsByPatch[i]
+        track = midi.Track()
+        track.append(midi.ProgramChangeEvent(value=pmap[i][0][0]))
+        mevsOnOff = mEventsToOnOff(mevsP)
+        print "On-Off: ", mevsOnOff
+        onOffToRelDur(mevsOnOff)
+        print "On-Off Rel: ", mevsOnOff
+        #print "MEVS: ", mevsOnOff
+        for e in mevsOnOff:
+            m = toMidiEvent(e)
+            track.append(m)
+        track.append(midi.EndOfTrackEvent(tick=1)) # close the track
+        pattern.append(track) # place the track in the pattern
+    print "MIDI values: ", pattern
+    return pattern
+
+# musicToMidi takes a filename (which must end in ".mid") and a music structure and writes
+# a MIDI file.
+def musicToMidi(filename, music):
+    checkMidiCompatible(music) # are the volumes and pitches within 0-127?
+    e = musicToMEvents(music) # convert to MEvents
+    p = mEventsToPattern(e) # convert to a pythonmidi Pattern
+    midi.write_midifile(filename, p) # write the MIDI file
 
 
 
@@ -456,10 +539,9 @@ def splitByPatch(mevs):
 #=============================================================================================
 # Testing Area
 
-m = Modify(Instrument(7), Modify(Tempo(0.5), chord([Note(60, 0.25), Note(64,0.25), Note(67,0.50)])))
-transpose(m,2)
-scaleVolume(m,1.2)
-print m
-e = musicToMEvents(m)
-print e
-print eventPatchList(e)
+m1 = Modify(Instrument(7), Modify(Tempo(2.0), line([Note(60, 0.25), Note(64,0.25), Note(67,0.50)])))
+m2 = Modify(Instrument(7), Modify(Tempo(2.0), chord([Note(60, 1.0), Note(64,1.0), Note(67,1.0)])))
+m3 = Modify(Instrument(7), Modify(Tempo(0.5), line([Note(67, 0.25), Note(64,0.25), Note(60,0.50)])))
+mAll = Seq(m1,Seq(m2, m3))
+
+musicToMidi("x.mid", mAll)
