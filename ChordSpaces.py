@@ -126,20 +126,20 @@ def partition(eqRel, items):
     for x in items:
         if len(eqClasses) == 0:
             eqClasses.append([x])
-            print(x, "added to its own class")
+            #print(x, "added to its own class")
         else:
             i = 0
             n = len(eqClasses)
             while i<n and i >=0:
                 if eqRel(x, eqClasses[i][0]):
                     eqClasses[i].append(x)
-                    print(x, "added to equivalence class ", i)
+                    #print(x, "added to equivalence class ", i)
                     i = -1 # exit condition 1: less than zero, class found
                 else:
                     i += 1 # exi condition 2: exceed n (no class found)
             if i>=n:
                 eqClasses.append([x])
-                print (x, "added to its own class")
+                #print (x, "added to its own class")
     return eqClasses
 
 def split(pred, items):
@@ -182,38 +182,38 @@ def randomize(items,rSeed):
 #=====================================================
 # TESTING
     
-x = [0,0,4,7]
-y = [0,3,7]
-z = [60,64,67]
-def f(a,b): return a==b
-def g(a): return a<2
+#x = [0,0,4,7]
+#y = [0,3,7]
+#z = [60,64,67]
+#def f(a,b): return a==b
+#def g(a): return a<2
 
-q = partition(oEq, [x,y,z])
-foo = [12,16,19]
+#q = partition(oEq, [x,y,z])
+#foo = [12,16,19]
 
 
 #s = makeRange([(0,50),(0,50),(0,50),(0,50)])
 
-def opEqTo(aSet,x):
-    xs = filter(lambda y: opEq(x,y), aSet)
-    return list(xs)
+#def opEqTo(aSet,x):
+#    xs = filter(lambda y: opEq(x,y), aSet)
+#    return list(xs)
 
-import time
+#import time
 
-def benchTest(set):
-    t1 = time.time()
-    print(len(set))
-    t2 = time.time()
-    # print(len(opEqTo(s,x)))
-    t3 = time.time();
-    print (t2-t1)
-    print (t3-t2)
-    
-def bench2():
-    t1 = time.time()
-    xs = searchRange((lambda w: opEq(w,[0,0,4,7])), [(0,30),(0,30),(0,30),(0,30)])
-    print (xs)
-    t2 = time.time()
-    print (t2-t1)
+#def benchTest(set):
+#    t1 = time.time()
+#    print(len(set))
+#    t2 = time.time()
+#    # print(len(opEqTo(s,x)))
+#    t3 = time.time();
+#    print (t2-t1)
+#    print (t3-t2)
+
+#def bench2():
+#    t1 = time.time()
+#    xs = searchRange((lambda w: opEq(w,[0,0,4,7])), [(0,30),(0,30),(0,30),(0,30)])
+#    print (xs)
+#    t2 = time.time()
+#    print (t2-t1)
 
 #bench2()

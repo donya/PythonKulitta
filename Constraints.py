@@ -1,6 +1,37 @@
 import Search
 import math
 import sys
+from ChordSpaces import *
+
+def sorted(chord):
+    return all(chord[i] <= chord[i + 1] for i in xrange(len(chord) - 1))
+
+def spaced(lims, chord):
+    cPairs = zip(chord[0:len(chord)-2], chord[1:])
+    def f(lim,pair):
+        diff = abs(pair[1] - pair[0])
+        return (diff >= lim[0] and diff <=lim[1])
+    return all([f(a,b) for (a,b) in zip(lims,cPairs)])
+
+# doubled :: [AbsChord] -> Predicate AbsChord
+# doubled templates x = elem (normOP x) allTriads where
+#     allTriads = concatMap (\c -> map (normOP . t c) templates) [0..11]
+
+
+triads = [[0, 0, 4, 7], [0, 4, 7, 7], [0, 0, 3, 7], [0, 3, 7, 7], [0, 0, 3, 6]]
+
+def flatten(x):
+    return [val for sublist in x for val in sublist]
+
+def doubled(templates, x):
+    allTriads = flatten(map(lambda c: map(lambda v: normOP(t(v,c)), templates), range(0,12)))
+    xn = normOP(x)
+    return xn in allTriads
+
+
+# satbFilter x = and $ map ($x) [sorted, spaced satbLimits, doubled triads]
+satbLimits = [(3,12), (3,12), (3,12), (3,12)]
+def satbFilter(x): return sorted(x) and doubled(triads,x) and spaced(satbLimits,x)
 
 # check if parrallel exist
 def hNotPar1(chord1, chord2):

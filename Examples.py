@@ -5,6 +5,8 @@ from MusicGrammars import *
 from PTGG import *
 import ClassicalFG
 import PostProc
+import MidiFuns
+
 r1 = (0.3, (CType.I, lambda p: [v(h(p)), i(h(p))]))
 r2 = (0.6, (CType.I, lambda p:[i(h(p)), i(h(p))]))
 r3 = (0.1, (CType.I, lambda p:[i(p)]))
@@ -29,23 +31,17 @@ def mapRules(fnDur, rs):
 rules = mapRules(smallerThanQN, rs)
 
 
-def genMusic(filename = "kullita-test", voiceRange = [[(47, 67), (52, 76), (60, 81)]]):
+def genMusic(filename = "kullita-test", voiceRange = [(47, 67), (52, 76), (60, 81)], printSteps=False):
     startSym = [i(MP(4 * Dur.WN, Mode.MAJOR, 0, 0, 4 * Dur.WN))]
-    testMP = MP(4 * Dur.WN, Mode.MAJOR, 0, 0, 4 * Dur.WN)
+    testMP = MP(16 * Dur.WN, Mode.MAJOR, 0, 0, 0)
     h(testMP)
-    txt = ""
-    # print(testMP.dur)
-    # # #test
-    # print"startSym dur:", startSym[0].val[1].dur
-    absStruct = gen(normalize(rs), startSym, 2)
-    print("absStruct", absStruct)
-
+    absStruct = gen(normalize(rs), startSym, 4)
+    if printSteps: print "absStruct: ", absStruct
     chords = PostProc.toAbsChords(absStruct)
-    print("chords:", chords[0].absChord, chords[0].key.absPitch)
-    print("Length of Chords:" + str(len(chords)))
-    # ClassicalFG.classicalCS2(chords)
-    ClassicalFG.classicalCS2WithRange(chords)
-    # print(len(chords))
-    PostProc    .tChodsToMusic(chords, filename)
+    if printSteps: print "TChords: ", chords
+    ClassicalFG.classicalCS2WithRange(chords, voiceRange)
+    if printSteps: print "New TChords: ", chords
+    MidiFuns.tChordsToMidi(chords, filename)
+    if printSteps: print "Done."
 
-genMusic("test")
+genMusic("test", [(47, 67), (52, 72), (60, 80), (65,83)], True)
