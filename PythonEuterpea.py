@@ -25,8 +25,9 @@
 #     - There is no direct equivalent of the Custom constructor.  Users can
 #       supply other classes and modify the conversion to MEvents accordingly.
 #
-# Unfinished functions: cut, remove, invertAt, invert, removeInstruments,
-# changeInstruments.
+# Untested functions: cut, remove
+#
+# Unfinished functions: invertAt, invert, removeInstruments, changeInstruments.
 # ===============================================================================
 
 from copy import deepcopy
@@ -325,6 +326,13 @@ def reverse(x):
     elif (x.__class__.__name__ == 'Par'):
         reverse(x.top)
         reverse(x.bot)
+        dTop = dur(x.top)
+        dBot = dur(x.bot)
+        # reversal affects relative start time of each section. Must add rests to correct.
+        if dTop < dBot:
+            x.top = Seq(Rest(dBot-dTop), x.top)
+        elif dBot < dTop:
+            x.bot = Seq(Rest(dTop-dBot), x.bot)
     elif (x.__class__.__name__ == 'Modify'):
         reverse(x.tree)
     else:
@@ -337,16 +345,69 @@ def times(music, n):
         m = deepcopy(music)
         return Seq(m, times(music, n-1))
 
-# Returns the first duration amount of a musical structure
-def cut(m, duration):
-    if duration<=0: return Rest(0)
-    else: pass
+# Keeps only the first duration amount of a musical structure. The amount
+# is in measures at the reference duration, which is 120bpm unless specified
+# by the Music constructor. Note that this operation is messy - it can leave
+# a lot of meaningless structure in place, with leaves occupied by Rest(0).
+def cut(x, amount):
+    if (x.__class__.__name__ == 'Music'):
+        cut(x.tree, amount)
+    elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
+        if amount <= x.dur:
+            x.dur = amount
+    elif (x.__class__.__name__ == 'Seq'):
+        dLeft = dur(x.left)
+        if dLeft <= amount:
+            cut(x.left, amount)
+            x.right = Rest(0) # right side becomes nonexistent
+        elif dLeft+dur(x.right) <= amount:
+            cut(x.right, amount)
+    elif (x.__class__.__name__ == 'Par'):
+        if dur(x.top) <= amount:
+            cut(x.top, amount)
+        if dur(x.bot) <= amount:
+            cut(x.bot, amount)
+    elif (x.__class__.__name__ == 'Modify'):
+        if dur(x.tree) <= amount:
+            if (x.mod.__class__.__name__ == 'Tempo'):
+                cut(x.tree, amount*x.value)
+            else:
+                cut(x.tree, amount)
+    else:
+        raise CustomException("Unrecognized musical structure: " + str(x))
 
-# The opposite of "cut," dropping the first duration amount
-# and returning the rest.
-def remove(m, duration):
-    if duration<=0: return deepcopy(m)
-    else: pass
+# The opposite of "cut," chopping away the first amount. Note that this
+# operation is messy - it can leave a lot of meaningless structure in
+# place, with leaves occupied by Rest(0).
+def remove(x, amount):
+    if amount<=0: pass # nothing to remove!
+    elif (x.__class__.__name__ == 'Music'):
+        remove(x.tree, amount)
+    elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
+        if amount >= x.dur:
+            x.dur = 0
+        if amount < x.dur:
+            x.dur = x.dur - amount
+    elif (x.__class__.__name__ == 'Seq'):
+        dLeft = dur(x.left)
+        if dLeft >= amount:
+            remove(x.left, amount)
+        elif dLeft + dur(x.right) >= amount:
+            x.left = Rest(0) # remove all of the left side
+            remove(x.right, amount-dLeft)
+    elif (x.__class__.__name__ == 'Par'):
+        if dur(x.top) >= amount:
+            remove(x.top, amount)
+        if dur(x.bot) >= amount:
+            remove(x.bot, amount)
+    elif (x.__class__.__name__ == 'Modify'):
+        if dur(x.tree) <= amount:
+            if (x.mod.__class__.__name__ == 'Tempo'):
+                remove(x.tree, amount*x.value)
+            else:
+                remove(x.tree, amount)
+    else:
+        raise CustomException("Unrecognized musical structure: " + str(x))
 
 def invertAt(m, pitch): pass
 
@@ -432,7 +493,10 @@ def musicToMEvents(x, currentTime=0, currentInstrument=(-1,INST)):
         y = applyTempo(x) # interpret all tempo scaling factors before continuing
         return musicToMEvents(y.tree, 0, -1)
     elif (x.__class__.__name__ == 'Note'):
-        return [MEvent(currentTime, x.pitch, x.dur, x.vol, currentInstrument)] # one note = one event
+        if x.dur > 0:
+            return [MEvent(currentTime, x.pitch, x.dur, x.vol, currentInstrument)] # one note = one event
+        else: # when duration is <0, there should be no event.
+            return []
     elif (x.__class__.__name__ == 'Rest'):
         return [] # rests don't contribute to an event representation
     elif (x.__class__.__name__ == 'Seq'):
