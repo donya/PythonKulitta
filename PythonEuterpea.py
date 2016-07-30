@@ -25,9 +25,7 @@
 #     - There is no direct equivalent of the Custom constructor.  Users can
 #       supply other classes and modify the conversion to MEvents accordingly.
 #
-# Untested functions: cut, remove
-#
-# Unfinished functions: invertAt, invert, removeInstruments, changeInstruments.
+# Unfinished functions: removeInstruments, changeInstruments.
 # ===============================================================================
 
 from copy import deepcopy
@@ -335,8 +333,7 @@ def reverse(x):
             x.bot = Seq(Rest(dTop-dBot), x.bot)
     elif (x.__class__.__name__ == 'Modify'):
         reverse(x.tree)
-    else:
-        raise CustomException("Unrecognized musical structure: "+str(x))
+    else: raise CustomException("Unrecognized musical structure: "+str(x))
 
 # Returns a new value that is n repetitions of the input musical structure
 def times(music, n):
@@ -357,24 +354,20 @@ def cut(x, amount):
             x.dur = amount
     elif (x.__class__.__name__ == 'Seq'):
         dLeft = dur(x.left)
-        if dLeft <= amount:
+        if dLeft >= amount: # do we have enough duration on the left?
             cut(x.left, amount)
             x.right = Rest(0) # right side becomes nonexistent
-        elif dLeft+dur(x.right) <= amount:
-            cut(x.right, amount)
+        elif dLeft+dur(x.right) >= amount: # do we have enough duration on the right?
+            cut(x.right, amount-dLeft)
     elif (x.__class__.__name__ == 'Par'):
-        if dur(x.top) <= amount:
-            cut(x.top, amount)
-        if dur(x.bot) <= amount:
-            cut(x.bot, amount)
+        cut(x.top, amount)
+        cut(x.bot, amount)
     elif (x.__class__.__name__ == 'Modify'):
-        if dur(x.tree) <= amount:
-            if (x.mod.__class__.__name__ == 'Tempo'):
-                cut(x.tree, amount*x.value)
-            else:
-                cut(x.tree, amount)
-    else:
-        raise CustomException("Unrecognized musical structure: " + str(x))
+        if (x.mod.__class__.__name__ == 'Tempo'):
+            cut(x.tree, amount*x.mod.value)
+        else:
+            cut(x.tree, amount)
+    else: raise CustomException("Unrecognized musical structure: " + str(x))
 
 # The opposite of "cut," chopping away the first amount. Note that this
 # operation is messy - it can leave a lot of meaningless structure in
@@ -396,22 +389,83 @@ def remove(x, amount):
             x.left = Rest(0) # remove all of the left side
             remove(x.right, amount-dLeft)
     elif (x.__class__.__name__ == 'Par'):
-        if dur(x.top) >= amount:
-            remove(x.top, amount)
-        if dur(x.bot) >= amount:
-            remove(x.bot, amount)
+        remove(x.top, amount)
+        remove(x.bot, amount)
     elif (x.__class__.__name__ == 'Modify'):
-        if dur(x.tree) <= amount:
-            if (x.mod.__class__.__name__ == 'Tempo'):
-                remove(x.tree, amount*x.value)
-            else:
-                remove(x.tree, amount)
-    else:
-        raise CustomException("Unrecognized musical structure: " + str(x))
+        if (x.mod.__class__.__name__ == 'Tempo'):
+            remove(x.tree, amount*x.mod.value)
+        else:
+            remove(x.tree, amount)
+    else: raise CustomException("Unrecognized musical structure: " + str(x))
 
-def invertAt(m, pitch): pass
+# The mFold operation traverses a music value with a series of operations
+# for the various constructors. noteOp takes a Note, restOp takes a Rest,
+# seqOp and parOp take the RESULTS of mFolding over their arguments, and
+# modOp takes a modifier (x.mod) and the RESULT of mFolding over its
+# tree (x.tree).
+def mFold(x, noteOp, restOp, seqOp, parOp, modOp):
+    if (x.__class__.__name__ == 'Music'):
+        return mFold(x.tree, noteOp, restOp, seqOp, parOp, modOp)
+    elif (x.__class__.__name__ == 'Note'):
+        return noteOp(x)
+    elif (x.__class__.__name__ == 'Rest'):
+        return restOp(x)
+    elif (x.__class__.__name__ == 'Seq'):
+        leftVal = mFold(x.left, noteOp, restOp, seqOp, parOp, modOp)
+        rightVal = mFold(x.right, noteOp, restOp, seqOp, parOp, modOp)
+        return seqOp(leftVal, rightVal)
+    elif (x.__class__.__name__ == 'Par'):
+        topVal = mFold(x.top, noteOp, restOp, seqOp, parOp, modOp)
+        botVal = mFold(x.bot, noteOp, restOp, seqOp, parOp, modOp)
+        return parOp(topVal, botVal)
+    elif (x.__class__.__name__ == 'Modify'):
+        val = mFold(x.tree, noteOp, restOp, seqOp, parOp, modOp)
+        return modOp(x.mod, val)
+    else: raise CustomException("Unrecognized musical structure: " + str(x))
 
-def invert(m): pass
+# The firstPitch function returns the first pitch in the Music value.
+# None is returned if there are no notes. Preference is lef tand top.
+def firstPitch(x):
+    if (x.__class__.__name__ == 'Music'):
+        return firstPitch(x.tree)
+    elif (x.__class__.__name__ == 'Note'):
+        return x.pitch
+    elif (x.__class__.__name__ == 'Rest'):
+        return None
+    elif (x.__class__.__name__ == 'Seq'):
+        leftVal = firstPitch(x.left)
+        if leftVal==None: return firstPitch(x.right)
+        else: return leftVal
+    elif (x.__class__.__name__ == 'Par'):
+        topVal = firstPitch(x.top)
+        if topVal==None: return firstPitch(x.bot)
+        else: return topVal
+    elif (x.__class__.__name__ == 'Modify'):
+        return firstPitch(x.tree)
+    else: raise CustomException("Unrecognized musical structure: " + str(x))
+
+# An application of mFold to extract all pitches in the music
+# structure as a list.
+def getPitches(m):
+    def fn(n): return [n.pitch]
+    def fr(r): return []
+    def fcat(a,b): return a+b
+    def fm(m,t): return t
+    return mFold(m, fn, fr, fcat, fcat, fm)
+
+# Musical inversion around a reference pitch. Metrical structure
+# is preserved; only pitches are altered.
+def invertAt(m, pitchRef):
+    def f(aNote): aNote.pitch = 2 * pitchRef - aNote.pitch
+    mMap(f, m)
+
+# Musical inversion around the first pitch in a musical structure.
+def invert(m):
+    p = firstPitch(m)
+    invertAt(m, p)
+
+def instrument(m, value):
+    return Modify(Instrument(value), m)
 
 def removeInstruments(m): pass
 
@@ -704,14 +758,10 @@ m1 = Modify(Tempo(2.0), line([Note(60, QN), Note(64,QN), Note(67,HN)]))
 m2 = Modify(Tempo(2.0), chord([Note(60, WN), Note(64,WN), Note(67,WN)]))
 m3 = Modify(Tempo(0.5), line([Note(67, QN), Note(64,QN), Note(60,HN)]))
 t1 = Seq(m1,Seq(m2, m3))
-
-print t1
-
 t2 = deepcopy(t1)
 reverse(t2)
-
-print t2
-
 mAll = Par(Modify(Instrument("BASS_LEAD"), t1), Modify(Instrument("OBOE"), t2))
-
+print(getPitches(mAll))
+invert(mAll)
 musicToMidi("x.mid", mAll)
+
