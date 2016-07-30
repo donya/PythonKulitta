@@ -2,16 +2,36 @@
 # PythonEuterpea: a Python port of Haskell Euterpea's core score-level features.
 # Author: Donya Quick
 #
+# This file requires GMInstruments.py and the pythonmidi library:
+# https://github.com/vishnubob/python-midi
+#
 # Euterpea is a library for music representation and creation in the Haskell
 # programming language. This file represents a port of the "core" features
 # of Euterpea's score-level or note-level features. This includes classes that
 # mirror the various constructors of the Music data type as well as functions
 # for conversion to MIDI.
 #
+# Haskell Euterpea's "Music a" polymorphism is captured in the Note class by
+# way of optional parameters like volume. There is also an optional params
+# field that is not used by the MIDI export backend.
+#
+# Haskell Euterpea's Control structures are implemented a bit differently. This
+# is how they work in Python:
+#     - Tempo and Instrument are essentially the same.
+#     - Transpose will not be used. Please use deepcopy and the transpose
+#       function instead.
+#     - Phrase and PhraseAttribute are not implemented.
+#     - KeySig is not currently impemented.
+#     - There is no direct equivalent of the Custom constructor.  Users can
+#       supply other classes and modify the conversion to MEvents accordingly.
+#
+# Unfinished functions: cut, remove, invertAt, invert, removeInstruments,
+# changeInstruments.
 # ===============================================================================
 
 from copy import deepcopy
 import midi
+from GMInstruments import *
 
 # For throwing errors
 class CustomException(Exception):
@@ -19,6 +39,24 @@ class CustomException(Exception):
         self.parameter = value
     def __str__(self):
         return repr(self.parameter)
+
+
+# =================================================================
+# DURATION CONSTANTS
+# =================================================================
+
+WN = 1.0 # whole note = one measure in 4/4
+DHN = 0.75 # dotted half
+HN = 0.5 #half note
+DQN = 0.375 # dotted quarter
+QN = 0.25 # quarter note
+DEN = 0.1875 #dotted eighth
+EN = 0.125 # eighth note
+DSN = 0.09375 # dotted sixteenth
+SN = 0.0625 # sixteenth note
+DTN = 0.046875 # dotted thirtysecond
+TN = 0.03125 # thirtysecond note
+
 
 
 # =================================================================
@@ -118,19 +156,21 @@ class Instrument:
             self.name = gmName(self.patch) # need to update this - should look up from patch
         elif isinstance(value, basestring):
             self.name = value
-            self.patch = 0 # TO-DO: needs to look up patch number from name
+            if self.name=="DRUMS":
+                self.patch = (0, itype)
+            else: self.patch = (gmNames.index(self.name), itype)
     def __str__(self):
         return (self.name+'('+str(self.patch[0])+')')
     def __repr__(self):
         return str(self)
 
 def gmName(patch):
-    if patch[0] < 0:
+    if patch[0] < 0 or patch[0] > 127:
         return "NO_INSTRUMENT"
     elif patch[1]:
         return "DRUMS"
     else:
-        return "INSTR" # TO-DO: this should eventually return an actual patch name
+        return gmNames[patch[0]]
 
 
 # =================================================================
@@ -234,22 +274,24 @@ def transpose(x, amount):
 # intVolume before converting to MIDI. You may wish to use
 # scaleVolumeInt instead.
 
-def setVolume(x, volume):
+def setVolume(x, volume): # set everything to a constant volume
     def f(xNote): xNote.vol = volume
     mMap(f,x)
 
-def scaleVolume(x, factor):
+def scaleVolume(x, factor): # multiply all volumes by a factor
     def f(xNote): xNote.vol = xNote.vol * factor
     mMap (f,x)
 
-def scaleVolumeInt(x, factor):
-    def f(xNote): xNote.vol = round(xNote.vol * factor)
+def scaleVolumeInt(x, factor): # multiply but then round to an integer
+    def f(xNote): xNote.vol = int(round(xNote.vol * factor))
     mMap (f,x)
 
-def adjustVolume(x, amount):
+def adjustVolume(x, amount): # add a constant amount to all volumes
     def f(xNote): xNote.vol = xNote.vol + amount
     mMap (f,x)
 
+# Check whether pitch and volume values are within 0-127.
+# If they are not, an exception is thrown.
 def checkMidiCompatible(x):
     def f(xNote):
         if xNote.vol < 0 or xNote.vol > 127:
@@ -258,6 +300,8 @@ def checkMidiCompatible(x):
             raise CustomException("Invalid pitch found: "+str(xNote.pitch))
     mMap (f,x)
 
+# Check whether pitch and volume values are within 0-127.
+# Values <0 are converted to 0 and those >127 become 127.
 def forceMidiCompatible(x):
     def f(xNote):
         if xNote.vol < 0: xNote.vol = 0
@@ -265,6 +309,58 @@ def forceMidiCompatible(x):
         if xNote.pitch <0: xNote.pitch = 0
         elif xNote.pitch >127: xNote.pitch = 127
     mMap (f,x)
+
+# Reverse a musical structure in place (last note is first, etc.)
+def reverse(x):
+    if (x.__class__.__name__ == 'Music'):
+        reverse(x.tree)
+    elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
+        pass # nothing to do
+    elif (x.__class__.__name__ == 'Seq'):
+        temp = x.left
+        x.left = x.right
+        x.right = temp
+        reverse(x.left)
+        reverse(x.right)
+    elif (x.__class__.__name__ == 'Par'):
+        reverse(x.top)
+        reverse(x.bot)
+    elif (x.__class__.__name__ == 'Modify'):
+        reverse(x.tree)
+    else:
+        raise CustomException("Unrecognized musical structure: "+str(x))
+
+# Returns a new value that is n repetitions of the input musical structure
+def times(music, n):
+    if n <= 0: return Rest(0)
+    else:
+        m = deepcopy(music)
+        return Seq(m, times(music, n-1))
+
+# Returns the first duration amount of a musical structure
+def cut(m, duration):
+    if duration<=0: return Rest(0)
+    else: pass
+
+# The opposite of "cut," dropping the first duration amount
+# and returning the rest.
+def remove(m, duration):
+    if duration<=0: return deepcopy(m)
+    else: pass
+
+def invertAt(m, pitch): pass
+
+def invert(m): pass
+
+def removeInstruments(m): pass
+
+def changeInstrument(m, value): pass
+
+# Scale all durations in a music structure by the same amount.
+def scaleDurations(m, factor):
+    def f(x): x.dur = x.dur*factor
+    mMapAll(f, m)
+
 
 
 
@@ -459,13 +555,14 @@ def toMidiTick(dur):
     ticks = int(round(dur * RESOLUTION * 4)) # bug fix 26-June-2016
     return ticks
 
+# Create a pythonmidi event from an MEventMidi value.
 def toMidiEvent(onOffMsg):
     m = None
     ticks = toMidiTick(onOffMsg.eTime)
-    if onOffMsg.eType==ON:
-        m = midi.NoteOnEvent(tick=ticks, velocity=int(onOffMsg.vol), pitch=int(onOffMsg.pitch))
-    else:
-        m = midi.NoteOffEvent(tick=ticks, velocity=int(onOffMsg.vol), pitch=int(onOffMsg.pitch))
+    p = int(onOffMsg.pitch)
+    v = int(onOffMsg.vol)
+    if onOffMsg.eType==ON: m = midi.NoteOnEvent(tick=ticks, velocity=v, pitch=p)
+    else: m = midi.NoteOffEvent(tick=ticks, velocity=v, pitch=p)
     return m
 
 
@@ -539,9 +636,18 @@ def musicToMidi(filename, music):
 #=============================================================================================
 # Testing Area
 
-m1 = Modify(Instrument(7), Modify(Tempo(2.0), line([Note(60, 0.25), Note(64,0.25), Note(67,0.50)])))
-m2 = Modify(Instrument(7), Modify(Tempo(2.0), chord([Note(60, 1.0), Note(64,1.0), Note(67,1.0)])))
-m3 = Modify(Instrument(7), Modify(Tempo(0.5), line([Note(67, 0.25), Note(64,0.25), Note(60,0.50)])))
-mAll = Seq(m1,Seq(m2, m3))
+m1 = Modify(Tempo(2.0), line([Note(60, QN), Note(64,QN), Note(67,HN)]))
+m2 = Modify(Tempo(2.0), chord([Note(60, WN), Note(64,WN), Note(67,WN)]))
+m3 = Modify(Tempo(0.5), line([Note(67, QN), Note(64,QN), Note(60,HN)]))
+t1 = Seq(m1,Seq(m2, m3))
+
+print t1
+
+t2 = deepcopy(t1)
+reverse(t2)
+
+print t2
+
+mAll = Par(Modify(Instrument("BASS_LEAD"), t1), Modify(Instrument("OBOE"), t2))
 
 musicToMidi("x.mid", mAll)

@@ -1,6 +1,9 @@
 # Score-level representations and MIDI conversion for some Kulita features
 # Code by Wen Sheng and Donya Quick
 #
+# This file requires the pythonmidi library:
+# https://github.com/vishnubob/python-midi
+#
 # Notable changes from previous versions:
 #
 # - Order of arguments to TNote and TChord constructors changed. The new order
@@ -177,7 +180,6 @@ def toVoices(tChords):
 def toTNotes(tChord):
     notes = map (lambda p: TNote(p, tChord.dur, tChord.vol, tChord.key, tChord.onset), tChord.absChord)
     return notes
-
 
 # toPitch converts a pitch number into a tuple represetation of 
 # a pitch class and an octave.
