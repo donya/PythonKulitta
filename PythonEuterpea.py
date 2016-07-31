@@ -24,8 +24,6 @@
 #     - KeySig is not currently impemented.
 #     - There is no direct equivalent of the Custom constructor.  Users can
 #       supply other classes and modify the conversion to MEvents accordingly.
-#
-# Unfinished functions: removeInstruments, changeInstruments.
 # ===============================================================================
 
 from copy import deepcopy
@@ -467,9 +465,38 @@ def invert(m):
 def instrument(m, value):
     return Modify(Instrument(value), m)
 
-def removeInstruments(m): pass
 
-def changeInstrument(m, value): pass
+
+# Remove Instrument modifiers from a musical structure
+def removeInstruments(x):
+    def checkInstMod(x): # function to get rid of individual nodes
+        if x.__class__.__name__ == 'Modify':
+            if x.mod.__class__.__name__ == 'Instrument': return x.tree
+            else: return x
+        else: return x
+    if x.__class__.__name__ == 'Music':
+        tNew = checkInstMod(x.tree)
+        removeInstruments(x.tree)
+    elif x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest':
+        pass
+    elif x.__class__.__name__ == 'Seq':
+        x.left = checkInstMod(x.left)
+        x.right = checkInstMod(x.right)
+        removeInstruments(x.left)
+        removeInstruments(x.right)
+    elif x.__class__.__name__ == 'Par':
+        x.top = checkInstMod(x.top)
+        x.bot = checkInstMod(x.bot)
+        removeInstruments(x.top)
+        removeInstruments(x.bot)
+    elif x.__class__.__name__ == 'Modify':
+        xNew = checkInstMod(x)
+        x = xNew
+    else: raise CustomException("Unrecognized musical structure: " + str(x))
+
+def changeInstrument(m, value):
+    removeInstruments(m)
+    instrument(value, m)
 
 # Scale all durations in a music structure by the same amount.
 def scaleDurations(m, factor):
@@ -763,5 +790,8 @@ reverse(t2)
 mAll = Par(Modify(Instrument("BASS_LEAD"), t1), Modify(Instrument("OBOE"), t2))
 print(getPitches(mAll))
 invert(mAll)
+print(mAll)
+removeInstruments(mAll)
+print(mAll)
 musicToMidi("x.mid", mAll)
 
