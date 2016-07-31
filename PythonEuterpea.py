@@ -32,10 +32,15 @@ from copy import deepcopy
 import midi
 from GMInstruments import *
 
-# For throwing errors
+
+# TODO?: rename EuterpeaException ?
 class CustomException(Exception):
+    """
+    For throwing errors
+    """
     def __init__(self, value):
         self.parameter = value
+
     def __str__(self):
         return repr(self.parameter)
 
@@ -44,18 +49,17 @@ class CustomException(Exception):
 # DURATION CONSTANTS
 # =================================================================
 
-WN = 1.0 # whole note = one measure in 4/4
-DHN = 0.75 # dotted half
-HN = 0.5 #half note
-DQN = 0.375 # dotted quarter
-QN = 0.25 # quarter note
-DEN = 0.1875 #dotted eighth
-EN = 0.125 # eighth note
-DSN = 0.09375 # dotted sixteenth
-SN = 0.0625 # sixteenth note
-DTN = 0.046875 # dotted thirtysecond
-TN = 0.03125 # thirtysecond note
-
+WN = 1.0  # whole note = one measure in 4/4
+DHN = 0.75  # dotted half
+HN = 0.5  # half note
+DQN = 0.375  # dotted quarter
+QN = 0.25  # quarter note
+DEN = 0.1875  # dotted eighth
+EN = 0.125  # eighth note
+DSN = 0.09375  # dotted sixteenth
+SN = 0.0625  # sixteenth note
+DTN = 0.046875  # dotted thirtysecond
+TN = 0.03125  # thirtysecond note
 
 
 # =================================================================
@@ -66,59 +70,85 @@ TN = 0.03125 # thirtysecond note
 # fall under an umbrella Music class to store everything.
 # =================================================================
 
-# A piece of music consists of a tree of musical structures interpreted within
-# a particular base or reference tempo, the default for which is 120bpm.
+#
 class Music:
+    """
+    A piece of music consists of a tree of musical structures interpreted within
+    a particular base or reference tempo, the default for which is 120bpm.
+    """
     def __init__(self, tree, bpm=120):
-        self.tree=tree
-        self.bpm=bpm
+        self.tree = tree
+        self.bpm = bpm
+
     def __str__(self):
-        return ('Music('+str(self.tree)+ ', ' + str(self.bpm)+' bpm)')
+        return 'Music(' + str(self.tree) + ', ' + str(self.bpm)+' bpm)'
+
     def __repr__(self):
         return str(self)
 
-# A Euterpea Note has a pitch, duration, volume, and other possible parameters.
-# (these other parameters are application-specific)
+
 class Note:
+    """
+    A Euterpea Note has a pitch, duration, volume, and other possible parameters.
+    (these other parameters are application-specific)
+    """
+    # TODO?: should params be stored?  Perhaps as python dictionary param: **params ?
     def __init__(self, pitch, dur=0.25, vol=100, params=None):
         self.pitch = pitch
         self.dur = dur
         self.vol = vol
+
     def __str__(self):
-        return ('Note'+str((self.pitch, self.dur, self.vol)))
+        return 'Note' + str((self.pitch, self.dur, self.vol))
+
     def __repr__(self):
         return str(self)
 
-# A Euterpea Rest has just a duration. It's a temporal place-holder just like a
-# rest on a paper score.
+
 class Rest:
+    """
+    A Euterpea Rest has just a duration. It's a temporal place-holder just like a
+    rest on a paper score.
+    """
     def __init__(self, dur):
         self.dur = dur
+
     def __str__(self):
-        return ('Rest('+str(self.dur)+')')
+        return 'Rest(' + str(self.dur) + ')'
+
     def __repr__(self):
         return str(self)
 
-# Seq is equivalent to Haskell Euterpea's (:+:) operator. It composes two
-# musical objects in sequence: left then right.
+
 class Seq:
+    """
+    Seq is equivalent to Haskell Euterpea's (:+:) operator. It composes two
+    musical objects in sequence: left then right.
+    """
     def __init__(self, left, right):
         self.left = left
         self.right = right
+
     def __str__(self):
-        return ('('+str(self.left)+ ') :+: (' + str(self.right)+')')
+        return '(' + str(self.left) + ') :+: (' + str(self.right) + ')'
+
     def __repr__(self):
         return str(self)
 
-# Par is equivalent to Haskell Euterpea's (:=:) operator. It composes two
-# musical objects in parallel: left and right happen starting at the same
-# time.
-class Par: # For composint two things in parallel
+
+class Par:  # For composing two things in parallel
+    """
+    Par is equivalent to Haskell Euterpea's (:=:) operator. It composes two
+    musical objects in parallel: left and right happen starting at the same
+    time.
+    """
     def __init__(self, top, bot):
         self.top = top
         self.bot = bot
+
     def __str__(self):
-        return ('('+str(self.top)+ ') :=: (' + str(self.bot)+')')
+        return '(' + str(self.top) + ') :=: (' + str(self.bot) + ')'
+
     def __repr__(self):
         return str(self)
 
