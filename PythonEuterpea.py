@@ -90,7 +90,7 @@ class Note:
     A Euterpea Note has a pitch, duration, volume, and other possible parameters.
     (these other parameters are application-specific)
     """
-    # TODO?: should params be stored?  Perhaps as python dictionary param: **params ?
+    # TODO?: store params?  Perhaps as python dictionary param: **params ?
     def __init__(self, pitch, dur=0.25, vol=100, params=None):
         self.pitch = pitch
         self.dur = dur
