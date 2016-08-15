@@ -47,17 +47,17 @@ class CustomException(Exception):
 # DURATION CONSTANTS
 # =================================================================
 
-WN = 1.0  # whole note = one measure in 4/4
-DHN = 0.75  # dotted half
-HN = 0.5  # half note
-DQN = 0.375  # dotted quarter
-QN = 0.25  # quarter note
-DEN = 0.1875  # dotted eighth
-EN = 0.125  # eighth note
-DSN = 0.09375  # dotted sixteenth
-SN = 0.0625  # sixteenth note
+WN = 1.0        # whole note = one measure in 4/4
+DHN = 0.75      # dotted half
+HN = 0.5        # half note
+DQN = 0.375     # dotted quarter
+QN = 0.25       # quarter note
+DEN = 0.1875    # dotted eighth
+EN = 0.125      # eighth note
+DSN = 0.09375   # dotted sixteenth
+SN = 0.0625     # sixteenth note
 DTN = 0.046875  # dotted thirtysecond
-TN = 0.03125  # thirtysecond note
+TN = 0.03125    # thirtysecond note
 
 
 # =================================================================
@@ -68,7 +68,6 @@ TN = 0.03125  # thirtysecond note
 # fall under an umbrella Music class to store everything.
 # =================================================================
 
-#
 class Music:
     """
     A piece of music consists of a tree of musical structures interpreted within
@@ -120,7 +119,7 @@ class Rest:
 
 class Seq:
     """
-    Seq is equivalent to Haskell Euterpea's (:+:) operator. It composes two
+    Seq is equivalent to Haskell Euterpexa's (:+:) operator. It composes two
     musical objects in sequence: left then right.
     """
     def __init__(self, left, right):
@@ -150,46 +149,66 @@ class Par:  # For composing two things in parallel
     def __repr__(self):
         return str(self)
 
-# Modify is equivalent to Haskell Euterpea's Modify constructor and allows
-# alterations to a musical tree. Which modifers are allowed are application
-# specific.
+
 class Modify:
+    """
+    Modify is equivalent to Haskell Euterpea's Modify constructor and allows
+    alterations to a musical tree.  Which modifiers are allowed are application
+    specific.
+    """
     def __init__(self, modifier, tree):
         self.mod = modifier
         self.tree = tree
+
     def __str__(self):
-        return ('Mod('+str(self.mod)+ ', ' + str(self.tree)+')')
+        return 'Mod(' + str(self.mod) + ', ' + str(self.tree)+')'
+
     def __repr__(self):
         return str(self)
 
-# A Tempo class to be used with the Modify class.
-# Tempos are scaling factors, not bpm. If the current tempo is 120bpm
-# and a Tempo(2.0) is applied, it results in 240bpm.
+
 class Tempo:
+    """
+    A Tempo class to be used with the Modify class.
+    Tempos are scaling factors, not bpm. If the current tempo is 120bpm
+    and a Tempo(2.0) is applied, it results in 240bpm.
+    """
     def __init__(self, value):
         self.value = value
+
     def __str__(self):
-        return ('Tempo('+str(self.value)+')')
+        return 'Tempo(' + str(self.value) + ')'
+
     def __repr__(self):
         return str(self)
 
-# An Instrument class to be used with the Modify class.
+
+# TODO?: Are these globals?
 PERC = True
 INST = False
+
+
 class Instrument:
+    """
+    An Instrument class to be used with the Modify class.
+    """
     def __init__(self, value, itype=False):
         if isinstance(value, int):
             self.patch = (value, itype)
-            self.name = gmName(self.patch) # need to update this - should look up from patch
+            self.name = gmName(self.patch)  # need to update this - should look up from patch
         elif isinstance(value, basestring):
             self.name = value
             if self.name=="DRUMS":
                 self.patch = (0, itype)
-            else: self.patch = (gmNames.index(self.name), itype)
+            else:
+                self.patch = (gmNames.index(self.name), itype)
+
     def __str__(self):
-        return (self.name+'('+str(self.patch[0])+')')
+        return self.name + '(' + str(self.patch[0]) + ')'
+
     def __repr__(self):
         return str(self)
+
 
 def gmName(patch):
     if patch[0] < 0 or patch[0] > 127:
@@ -201,14 +220,18 @@ def gmName(patch):
 
 
 # =================================================================
-# OPERATIOSN ON MUSICAL STRUCTURES
+# OPERATIONS ON MUSICAL STRUCTURES
 # Haskell Euterpea provides a number of basic operations on the
 # Music type. Only a few of them are presented here.
 # =================================================================
 
-# Computes the duration of a music tree. Values are relative to the overall
-# bpm for the entire tree, such that 0.25 is a quarter note.
 def dur(x):
+    """
+    Computes the duration of a music tree. Values are relative to the overall
+    bpm for the entire tree, such that 0.25 is a quarter note.
+    :param x:
+    :return:
+    """
     if (x.__class__.__name__ == 'Music'):
         d = dur(x.tree)
         return d * (120/x.tempo)
@@ -227,9 +250,14 @@ def dur(x):
     else:
         raise CustomException("Unrecognized musical structure: "+str(x))
 
-# The line function build a "melody" with Seq constructors
-# out of a list of music substructures. Values are NOT copied.
+
 def line(musicVals):
+    """
+    The line function build a "melody" with Seq constructors
+    out of a list of music substructures. Values are NOT copied.
+    :param musicVals:
+    :return:
+    """
     tree = None
     for m in musicVals:
         if tree is None: tree = m
