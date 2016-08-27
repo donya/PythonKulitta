@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9e19ecdd-6e73-4734-b00d-d40d23efbd04" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__init__.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GMInstruments.py" afterPath="$PROJECT_DIR$/GMInstruments.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PythonEuterpea.py" afterPath="$PROJECT_DIR$/PythonEuterpea.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__init__.py" afterPath="$PROJECT_DIR$/__init__.py" />
     </list>
     <ignored path="Python-Kulitta.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -69,8 +68,8 @@
       <file leaf-file-name="PythonEuterpea.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PythonEuterpea.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4005">
-              <caret line="267" column="2" selection-start-line="267" selection-start-column="2" selection-end-line="267" selection-end-column="2" />
+            <state relative-caret-position="290">
+              <caret line="862" column="0" selection-start-line="862" selection-start-column="0" selection-end-line="862" selection-end-column="0" />
               <folding>
                 <element signature="e#1445#1470#0" expanded="true" />
               </folding>
@@ -82,7 +81,7 @@
         <entry file="file://$PROJECT_DIR$/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <caret line="0" column="21" selection-start-line="0" selection-start-column="21" selection-end-line="0" selection-end-column="21" />
               <folding />
             </state>
           </provider>
@@ -111,7 +110,7 @@
       <file leaf-file-name="PTGG.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PTGG.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
+            <state relative-caret-position="1455">
               <caret line="98" column="30" selection-start-line="98" selection-start-column="30" selection-end-line="98" selection-end-column="30" />
               <folding />
             </state>
@@ -198,8 +197,8 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="37" />
-    <option name="y" value="129" />
+    <option name="x" value="42" />
+    <option name="y" value="135" />
     <option name="width" value="1202" />
     <option name="height" value="766" />
   </component>
@@ -228,27 +227,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Python-Kulitta" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Python-Kulitta" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PythonKulitta" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="Scope">
         <subPane subId="Project Files">
           <PATH>
@@ -353,6 +331,27 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Python-Kulitta" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Python-Kulitta" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PythonKulitta" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -650,7 +649,14 @@
       <option name="project" value="LOCAL" />
       <updated>1469934222187</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="small additional pythonicization">
+      <created>1471224294372</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1471224294372</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -659,7 +665,7 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="37" y="129" width="1202" height="766" extended-state="0" />
+    <frame x="42" y="135" width="1202" height="766" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28027096" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -718,7 +724,8 @@
       <path value="$PROJECT_DIR$/python-midi/python-midi" />
     </ignored-roots>
     <MESSAGE value="Initial pythonicization" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial pythonicization" />
+    <MESSAGE value="small additional pythonicization" />
+    <option name="LAST_COMMIT_MESSAGE" value="small additional pythonicization" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -851,14 +858,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/QuotientSpaces.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -877,16 +876,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/PTGG.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
+        <state relative-caret-position="1455">
           <caret line="98" column="30" selection-start-line="98" selection-start-column="30" selection-end-line="98" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="21" selection-start-line="0" selection-start-column="21" selection-end-line="0" selection-end-column="21" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PythonEuterpea.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4005">
-          <caret line="267" column="2" selection-start-line="267" selection-start-column="2" selection-end-line="267" selection-end-column="2" />
+        <state relative-caret-position="290">
+          <caret line="862" column="0" selection-start-line="862" selection-start-column="0" selection-end-line="862" selection-end-column="0" />
           <folding>
             <element signature="e#1445#1470#0" expanded="true" />
           </folding>

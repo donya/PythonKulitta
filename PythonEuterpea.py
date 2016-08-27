@@ -839,6 +839,7 @@ def musicToMidi(filename, music):
 #=============================================================================================
 # Testing Area
 
+'''
 m1 = Modify(Tempo(2.0), line([Note(60, QN), Note(64,QN), Note(67,HN)]))
 m2 = Modify(Tempo(2.0), chord([Note(60, WN), Note(64,WN), Note(67,WN)]))
 m3 = Modify(Tempo(0.5), line([Note(67, QN), Note(64,QN), Note(60,HN)]))
@@ -852,4 +853,20 @@ print(mAll)
 removeInstruments(mAll)
 print(mAll)
 musicToMidi("x.mid", mAll)
+'''
+
+
+# =============================================================================================
+# To go within PythonEuterpea.py
+# Some extra supporting functions for compatibility with some other code
+
+
+def pitchListToMusic(ps, defDur=0.25, defVol=100):
+    ns = map(lambda p: Note(p, defDur, defVol), ps)
+    return line(ns)
+
+
+def pdPairsToMusic(pds, defVol=100):
+    ns = map(lambda x: Note(x[0], x[1], defVol), pds)
+    return line(ns)
 
