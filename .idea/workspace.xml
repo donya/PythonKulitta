@@ -67,8 +67,8 @@
       <file leaf-file-name="PythonEuterpea.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PythonEuterpea.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="395">
-              <caret line="884" column="20" selection-start-line="884" selection-start-column="4" selection-end-line="884" selection-end-column="20" />
+            <state relative-caret-position="31">
+              <caret line="834" column="0" selection-start-line="834" selection-start-column="0" selection-end-line="834" selection-end-column="0" />
               <folding>
                 <element signature="e#1445#1470#0" expanded="true" />
               </folding>
@@ -662,7 +662,14 @@
       <option name="project" value="LOCAL" />
       <updated>1472334698031</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="added pitchListToChord and chordListToMusic">
+      <created>1472335793807</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1472335793807</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -677,8 +684,8 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28027096" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22106825" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33972603" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22106825" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33827892" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2621514" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -732,7 +739,8 @@
     <MESSAGE value="Initial pythonicization" />
     <MESSAGE value="small additional pythonicization" />
     <MESSAGE value="added pitchListToMusic and pdPairsToMusic" />
-    <option name="LAST_COMMIT_MESSAGE" value="added pitchListToMusic and pdPairsToMusic" />
+    <MESSAGE value="added pitchListToChord and chordListToMusic" />
+    <option name="LAST_COMMIT_MESSAGE" value="added pitchListToChord and chordListToMusic" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -899,8 +907,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/PythonEuterpea.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="395">
-          <caret line="884" column="20" selection-start-line="884" selection-start-column="4" selection-end-line="884" selection-end-column="20" />
+        <state relative-caret-position="31">
+          <caret line="834" column="0" selection-start-line="834" selection-start-column="0" selection-end-line="834" selection-end-column="0" />
           <folding>
             <element signature="e#1445#1470#0" expanded="true" />
           </folding>

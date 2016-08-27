@@ -834,8 +834,6 @@ def musicToMidi(filename, music):
     midi.write_midifile(filename, p) # write the MIDI file
 
 
-
-
 #=============================================================================================
 # Testing Area
 
