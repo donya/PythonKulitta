@@ -867,6 +867,21 @@ def pitchListToMusic(ps, defDur=0.25, defVol=100):
 
 
 def pdPairsToMusic(pds, defVol=100):
+    """
+    pdPair = pitch-duration pair
+    :param pds:
+    :param defVol:
+    :return:
+    """
     ns = map(lambda x: Note(x[0], x[1], defVol), pds)
     return line(ns)
 
+
+def pitchListToChord(ps, defDur=0.25, defVol=100):
+    ns = map (lambda p: Note(p, defDur, defVol), ps)
+    return chord(ns)
+
+
+def chordListToMusic(chords, defDur=0.25, defVol=100):
+    cList = map(lambda x: pitchListToChord(x, defDur, defVol), chords)
+    return line(cList)
