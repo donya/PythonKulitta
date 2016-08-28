@@ -834,33 +834,20 @@ def musicToMidi(filename, music):
     midi.write_midifile(filename, p) # write the MIDI file
 
 
-#=============================================================================================
-# Testing Area
-
-'''
-m1 = Modify(Tempo(2.0), line([Note(60, QN), Note(64,QN), Note(67,HN)]))
-m2 = Modify(Tempo(2.0), chord([Note(60, WN), Note(64,WN), Note(67,WN)]))
-m3 = Modify(Tempo(0.5), line([Note(67, QN), Note(64,QN), Note(60,HN)]))
-t1 = Seq(m1,Seq(m2, m3))
-t2 = deepcopy(t1)
-reverse(t2)
-mAll = Par(Modify(Instrument("BASS_LEAD"), t1), Modify(Instrument("OBOE"), t2))
-print(getPitches(mAll))
-invert(mAll)
-print(mAll)
-removeInstruments(mAll)
-print(mAll)
-musicToMidi("x.mid", mAll)
-'''
-
-
 # =============================================================================================
 # To go within PythonEuterpea.py
 # Some extra supporting functions for compatibility with some other code
 
 
+def pitchToNote(p, defDur=0.25, defVol=100):
+    if p==None:
+        return Rest(defDur)
+    else:
+        return Note(p, defDur, defVol)
+
+
 def pitchListToMusic(ps, defDur=0.25, defVol=100):
-    ns = map(lambda p: Note(p, defDur, defVol), ps)
+    ns = map(pitchToNote, ps)
     return line(ns)
 
 
@@ -876,10 +863,41 @@ def pdPairsToMusic(pds, defVol=100):
 
 
 def pitchListToChord(ps, defDur=0.25, defVol=100):
-    ns = map (lambda p: Note(p, defDur, defVol), ps)
-    return chord(ns)
+    if ps == None:
+        return Rest(defDur)
+    else:
+        ns = map (lambda p: Note(p, defDur, defVol), ps)
+        return chord(ns)
 
 
 def chordListToMusic(chords, defDur=0.25, defVol=100):
     cList = map(lambda x: pitchListToChord(x, defDur, defVol), chords)
     return line(cList)
+
+
+#=============================================================================================
+# Testing Area
+
+'''
+# Testing basic musical structures
+m1 = Modify(Tempo(2.0), line([Note(60, QN), Note(64,QN), Note(67,HN)]))
+m2 = Modify(Tempo(2.0), chord([Note(60, WN), Note(64,WN), Note(67,WN)]))
+m3 = Modify(Tempo(0.5), line([Note(67, QN), Note(64,QN), Note(60,HN)]))
+t1 = Seq(m1,Seq(m2, m3))
+t2 = deepcopy(t1)
+reverse(t2)
+mAll = Par(Modify(Instrument("BASS_LEAD"), t1), Modify(Instrument("OBOE"), t2))
+print(getPitches(mAll))
+invert(mAll)
+print(mAll)
+removeInstruments(mAll)
+print(mAll)
+musicToMidi("x.mid", mAll)
+'''
+
+'''
+# Testing None to Rest conversion
+chords = chordListToMusic([(60,64,67), None, (70,35,80,35,30)])
+print chords
+m = musicToMidi("chords.mid", chords)
+'''
