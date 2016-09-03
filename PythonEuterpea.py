@@ -1,9 +1,12 @@
 # ===============================================================================
 # PythonEuterpea: a Python port of Haskell Euterpea's core score-level features.
 # Author: Donya Quick
+# Last modified: 02-Sept-2016
 #
-# This file requires GMInstruments.py and the pythonmidi library:
+# This file requires GMInstruments.py and the python-midi library:
 # https://github.com/vishnubob/python-midi
+#
+# Python-midi can be installed with: pip install python-midi
 #
 # Euterpea is a library for music representation and creation in the Haskell
 # programming language. This file represents a port of the "core" features
@@ -12,27 +15,15 @@
 # for conversion to MIDI.
 #
 # Haskell Euterpea's "Music a" polymorphism is captured in the Note class by
-# way of optional parameters like volume. There is also an optional params
-# field that is not used by the MIDI export backend.
-#
-# Haskell Euterpea's Control structures are implemented a bit differently. This
-# is how they work in Python:
-#     - Tempo and Instrument are essentially the same.
-#     - Transpose will not be used. Please use deepcopy and the transpose
-#       function instead.
-#     - Phrase and PhraseAttribute are not implemented.
-#     - KeySig is not currently impemented.
-#     - There is no direct equivalent of the Custom constructor.  Users can
-#       supply other classes and modify the conversion to MEvents accordingly.
+# way of optional parameters like vol (volume) and params (any type). There is
+# also an optional params field that is not used by the MIDI export backend.
 # ===============================================================================
 
 from copy import deepcopy
-import midi
-from GMInstruments import *
+import midi # This is the python-midi library
+from GMInstruments import * # Bring in a bunch of GM instrument names
 
-
-# TODO?: rename EuterpeaException ?
-class CustomException(Exception):
+class EuterpeaException(Exception):
     """
     For throwing errors
     """
@@ -94,7 +85,7 @@ class Note:
         self.pitch = pitch
         self.dur = dur
         self.vol = vol
-
+        self.params = params
     def __str__(self):
         return 'Note' + str((self.pitch, self.dur, self.vol))
 
@@ -107,9 +98,9 @@ class Rest:
     A Euterpea Rest has just a duration. It's a temporal place-holder just like a
     rest on a paper score.
     """
-    def __init__(self, dur):
+    def __init__(self, dur=0.25, params=None):
         self.dur = dur
-
+        self.params = params
     def __str__(self):
         return 'Rest(' + str(self.dur) + ')'
 
@@ -183,7 +174,7 @@ class Tempo:
         return str(self)
 
 
-# TODO?: Are these globals?
+# Constants for instrument creation
 PERC = True
 INST = False
 
@@ -229,8 +220,8 @@ def dur(x):
     """
     Computes the duration of a music tree. Values are relative to the overall
     bpm for the entire tree, such that 0.25 is a quarter note.
-    :param x:
-    :return:
+    :param x: the music structure
+    :return: the duration of x in whole notes (wn = 1.0)
     """
     if (x.__class__.__name__ == 'Music'):
         d = dur(x.tree)
@@ -248,15 +239,15 @@ def dur(x):
         else:
             return dur(x.tree)
     else:
-        raise CustomException("Unrecognized musical structure: "+str(x))
+        raise EuterpeaException("Unrecognized musical structure: "+str(x))
 
 
 def line(musicVals):
     """
     The line function build a "melody" with Seq constructors
     out of a list of music substructures. Values are NOT copied.
-    :param musicVals:
-    :return:
+    :param musicVals: a list of musical structures
+    :return: the sequential composition of the input list
     """
     tree = None
     for m in musicVals:
@@ -265,17 +256,28 @@ def line(musicVals):
     return tree
 
 
-# The chord function build a "chord" with Par constructors
-# out of a list of music substructures. Values are NOT copied.
+
 def chord(musicVals):
+    '''
+    The chord function build a "chord" with Par constructors
+    out of a list of music substructures. Values are NOT copied.
+    :param musicVals: a list of music structures
+    :return: the parallel composition of the input
+    '''
     tree = None
     for m in musicVals:
         if tree is None: tree = m
         else: tree = Par(tree, m)
     return tree
 
-# The mMap function maps a function over the Notes in a Music value.
+
 def mMap(f, x):
+    '''
+    The mMap function maps a function over the Notes in a Music value.
+    :param f: Function to map over Notes
+    :param x: the music structure to operate on
+    :return: an in-place modification of the music structure
+    '''
     if (x.__class__.__name__ == 'Music'):
         mMap(f, x.tree)
     elif (x.__class__.__name__ == 'Note'):
@@ -291,14 +293,20 @@ def mMap(f, x):
     elif (x.__class__.__name__ == 'Modify'):
         mMap(f, x.tree)
     else:
-        raise CustomException("Unrecognized musical structure: "+str(x))
+        raise EuterpeaException("Unrecognized musical structure: "+str(x))
 
 
-# The mMapDur function is not found in Haskell Euterpea but may prove useful.
-# It maps a function over Notes and Rests and applies it to the entire musical
-# structure. Note: the function MUST handle the constructors directly if using
-# something other than dur.
+
 def mMapAll(f, x):
+    '''
+    The mMapDur function is not found in Haskell Euterpea but may prove useful.
+    It maps a function over Notes and Rests and applies it to the entire musical
+    structure. Note: the function MUST handle the constructors directly if using
+    something other than dur.
+    :param f: The function to apply to durations (v.dur for a Note or Rest)
+    :param x: the music structure to traverse
+    :return: an in-place altered version of the music structure
+    '''
     if (x.__class__.__name__ == 'Music'):
         mMapAll(f, x.tree)
     elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
@@ -312,12 +320,18 @@ def mMapAll(f, x):
     elif (x.__class__.__name__ == 'Modify'):
         mMapAll(f, x.tree)
     else:
-        raise CustomException("Unrecognized musical structure: "+str(x))
+        raise EuterpeaException("Unrecognized musical structure: "+str(x))
 
 
-# transpose directly alters the Notes of the supplied structure.
-# Each Note's pitch number has amount added to it.
+
 def transpose(x, amount):
+    '''
+    transpose directly alters the Notes of the supplied structure.
+    Each Note's pitch number has amount added to it.
+    :param x:
+    :param amount:
+    :return:
+    '''
     def f(xNote): xNote.pitch = xNote.pitch+amount
     mMap(f, x)
 
@@ -345,19 +359,29 @@ def adjustVolume(x, amount): # add a constant amount to all volumes
     def f(xNote): xNote.vol = xNote.vol + amount
     mMap (f,x)
 
-# Check whether pitch and volume values are within 0-127.
-# If they are not, an exception is thrown.
+
 def checkMidiCompatible(x):
+    '''
+    Check whether pitch and volume values are within 0-127.
+    If they are not, an exception is thrown.
+    :param x: the music structure to search through
+    :return: nothing if successful - otherwise an exception is thrown.
+    '''
     def f(xNote):
         if xNote.vol < 0 or xNote.vol > 127:
-            raise CustomException("Invalid volume found: "+str(xNote.vol))
+            raise EuterpeaException("Invalid volume found: "+str(xNote.vol))
         if xNote.pitch < 0 or xNote.pitch > 127:
-            raise CustomException("Invalid pitch found: "+str(xNote.pitch))
+            raise EuterpeaException("Invalid pitch found: "+str(xNote.pitch))
     mMap (f,x)
 
-# Check whether pitch and volume values are within 0-127.
-# Values <0 are converted to 0 and those >127 become 127.
+
 def forceMidiCompatible(x):
+    '''
+    Check whether pitch and volume values are within 0-127.
+    Values <0 are converted to 0 and those >127 become 127.
+    :param x: the music structure to alter
+    :return: a MIDI-compatible version of the input
+    '''
     def f(xNote):
         if xNote.vol < 0: xNote.vol = 0
         elif xNote.vol > 127: xNote.vol = 127
@@ -365,8 +389,13 @@ def forceMidiCompatible(x):
         elif xNote.pitch >127: xNote.pitch = 127
     mMap (f,x)
 
-# Reverse a musical structure in place (last note is first, etc.)
+
 def reverse(x):
+    '''
+    Reverse a musical structure in place (last note is first, etc.)
+    :param x: the music structure to reverse.
+    :return: the reversal of the input.
+    '''
     if (x.__class__.__name__ == 'Music'):
         reverse(x.tree)
     elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
@@ -389,20 +418,34 @@ def reverse(x):
             x.bot = Seq(Rest(dTop-dBot), x.bot)
     elif (x.__class__.__name__ == 'Modify'):
         reverse(x.tree)
-    else: raise CustomException("Unrecognized musical structure: "+str(x))
+    else: raise EuterpeaException("Unrecognized musical structure: "+str(x))
 
-# Returns a new value that is n repetitions of the input musical structure
+
 def times(music, n):
+    '''
+    Returns a new value that is n repetitions of the input musical structure.
+    Deep copy is used, so there will be no shared references between the input
+    and the output.
+    :param music: the music structure to repeat
+    :param n: how many times to repeat?
+    :return: a new structure (so this should be called as a = times(b,n)
+    '''
     if n <= 0: return Rest(0)
     else:
         m = deepcopy(music)
         return Seq(m, times(music, n-1))
 
-# Keeps only the first duration amount of a musical structure. The amount
-# is in measures at the reference duration, which is 120bpm unless specified
-# by the Music constructor. Note that this operation is messy - it can leave
-# a lot of meaningless structure in place, with leaves occupied by Rest(0).
+
 def cut(x, amount):
+    '''
+    Keeps only the first duration amount of a musical structure. The amount
+    is in measures at the reference duration, which is 120bpm unless specified
+    by the Music constructor. Note that this operation is messy - it can leave
+    a lot of meaningless structure in place, with leaves occupied by Rest(0).
+    :param x: the music value to alter
+    :param amount: how many whole notes worth to take.
+    :return: the furst amount of the music structure by time (whole note = 1.0)
+    '''
     if (x.__class__.__name__ == 'Music'):
         cut(x.tree, amount)
     elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
@@ -423,12 +466,18 @@ def cut(x, amount):
             cut(x.tree, amount*x.mod.value)
         else:
             cut(x.tree, amount)
-    else: raise CustomException("Unrecognized musical structure: " + str(x))
+    else: raise EuterpeaException("Unrecognized musical structure: " + str(x))
 
-# The opposite of "cut," chopping away the first amount. Note that this
-# operation is messy - it can leave a lot of meaningless structure in
-# place, with leaves occupied by Rest(0).
+
 def remove(x, amount):
+    '''
+    The opposite of "cut," chopping away the first amount. Note that this
+    operation is messy - it can leave a lot of meaningless structure in
+    place, with leaves occupied by Rest(0).
+    :param x: the music structure to alter
+    :param amount: how much to cut off of the beginning?
+    :return:
+    '''
     if amount<=0: pass # nothing to remove!
     elif (x.__class__.__name__ == 'Music'):
         remove(x.tree, amount)
@@ -452,14 +501,24 @@ def remove(x, amount):
             remove(x.tree, amount*x.mod.value)
         else:
             remove(x.tree, amount)
-    else: raise CustomException("Unrecognized musical structure: " + str(x))
+    else: raise EuterpeaException("Unrecognized musical structure: " + str(x))
 
-# The mFold operation traverses a music value with a series of operations
-# for the various constructors. noteOp takes a Note, restOp takes a Rest,
-# seqOp and parOp take the RESULTS of mFolding over their arguments, and
-# modOp takes a modifier (x.mod) and the RESULT of mFolding over its
-# tree (x.tree).
+
 def mFold(x, noteOp, restOp, seqOp, parOp, modOp):
+    '''
+    The mFold operation traverses a music value with a series of operations
+    for the various constructors. noteOp takes a Note, restOp takes a Rest,
+    seqOp and parOp take the RESULTS of mFolding over their arguments, and
+    modOp takes a modifier (x.mod) and the RESULT of mFolding over its
+    tree (x.tree).
+    :param x:
+    :param noteOp:
+    :param restOp:
+    :param seqOp:
+    :param parOp:
+    :param modOp:
+    :return:
+    '''
     if (x.__class__.__name__ == 'Music'):
         return mFold(x.tree, noteOp, restOp, seqOp, parOp, modOp)
     elif (x.__class__.__name__ == 'Note'):
@@ -477,11 +536,15 @@ def mFold(x, noteOp, restOp, seqOp, parOp, modOp):
     elif (x.__class__.__name__ == 'Modify'):
         val = mFold(x.tree, noteOp, restOp, seqOp, parOp, modOp)
         return modOp(x.mod, val)
-    else: raise CustomException("Unrecognized musical structure: " + str(x))
+    else: raise EuterpeaException("Unrecognized musical structure: " + str(x))
 
-# The firstPitch function returns the first pitch in the Music value.
-# None is returned if there are no notes. Preference is lef tand top.
 def firstPitch(x):
+    '''
+    The firstPitch function returns the first pitch in the Music value.
+    None is returned if there are no notes. Preference is lef tand top.
+    :param x:
+    :return:
+    '''
     if (x.__class__.__name__ == 'Music'):
         return firstPitch(x.tree)
     elif (x.__class__.__name__ == 'Note'):
@@ -498,35 +561,61 @@ def firstPitch(x):
         else: return topVal
     elif (x.__class__.__name__ == 'Modify'):
         return firstPitch(x.tree)
-    else: raise CustomException("Unrecognized musical structure: " + str(x))
+    else: raise EuterpeaException("Unrecognized musical structure: " + str(x))
 
-# An application of mFold to extract all pitches in the music
-# structure as a list.
+
 def getPitches(m):
+    '''
+    An application of mFold to extract all pitches in the music
+    structure as a list.
+    :param m:
+    :return:
+    '''
     def fn(n): return [n.pitch]
     def fr(r): return []
     def fcat(a,b): return a+b
     def fm(m,t): return t
     return mFold(m, fn, fr, fcat, fcat, fm)
 
-# Musical inversion around a reference pitch. Metrical structure
-# is preserved; only pitches are altered.
+
 def invertAt(m, pitchRef):
+    '''
+    Musical inversion around a reference pitch. Metrical structure
+    is preserved; only pitches are altered.
+    :param m:
+    :param pitchRef:
+    :return:
+    '''
     def f(aNote): aNote.pitch = 2 * pitchRef - aNote.pitch
     mMap(f, m)
 
-# Musical inversion around the first pitch in a musical structure.
 def invert(m):
+    '''
+    Musical inversion around the first pitch in a musical structure.
+    :param m:
+    :return:
+    '''
     p = firstPitch(m)
     invertAt(m, p)
 
 def instrument(m, value):
+    '''
+    Shorthand for setting an instrument.
+    :param m:
+    :param value:
+    :return:
+    '''
     return Modify(Instrument(value), m)
 
 
 
-# Remove Instrument modifiers from a musical structure
+
 def removeInstruments(x):
+    '''
+    Remove Instrument modifiers from a musical structure
+    :param x:
+    :return:
+    '''
     def checkInstMod(x): # function to get rid of individual nodes
         if x.__class__.__name__ == 'Modify':
             if x.mod.__class__.__name__ == 'Instrument': return x.tree
@@ -550,7 +639,7 @@ def removeInstruments(x):
     elif x.__class__.__name__ == 'Modify':
         xNew = checkInstMod(x)
         x = xNew
-    else: raise CustomException("Unrecognized musical structure: " + str(x))
+    else: raise EuterpeaException("Unrecognized musical structure: " + str(x))
 
 def changeInstrument(m, value):
     removeInstruments(m)
@@ -572,17 +661,29 @@ def scaleDurations(m, factor):
 # =================================================================
 
 
-# applyTempo copies its input and interprets its Tempo modifiers. This
-# scales durations in the tree and removes Modify nodes for Tempo. The
-# original input structure, however, is left unchanged.
+
 def applyTempo(x, tempo=1.0):
+    '''
+    applyTempo copies its input and interprets its Tempo modifiers. This
+    scales durations in the tree and removes Modify nodes for Tempo. The
+    original input structure, however, is left unchanged.
+    :param x:
+    :param tempo:
+    :return:
+    '''
     y = deepcopy(x)
     y = applyTempoInPlace(y, tempo)
     return y
 
-# applyTempoInPlace performs in-place interpretation of Tempo modifiers.
-# However, it still has to be used as: foo = applyTempoInPace(foo)
+
 def applyTempoInPlace(x, tempo=1.0):
+    '''
+    applyTempoInPlace performs in-place interpretation of Tempo modifiers.
+    However, it still has to be used as: foo = applyTempoInPace(foo)
+    :param x:
+    :param tempo:
+    :return:
+    '''
     if (x.__class__.__name__ == 'Music'):
         x.tree = applyTempo(x.tree, 120/x.bpm)
         x.bpm = 120
@@ -606,14 +707,17 @@ def applyTempoInPlace(x, tempo=1.0):
             x.tree = applyTempo(x.tree, tempo)
             return x
     else:
-        raise CustomException("Unrecognized musical structure: "+str(x))
+        raise EuterpeaException("Unrecognized musical structure: "+str(x))
 
-# MEvent is a fairly direct representation of Haskell Euterpea's MEvent type,
-# which is for event-style reasoning much like a piano roll representation.
-# eTime is absolute time for a tempo of 120bpm. So, 0.25 is a quarter note at
-# 128bpm. The patch field should be a patch number, like the patch field of
-# the Instrument class.
+
 class MEvent:
+    '''
+    MEvent is a fairly direct representation of Haskell Euterpea's MEvent type,
+    which is for event-style reasoning much like a piano roll representation.
+    eTime is absolute time for a tempo of 120bpm. So, 0.25 is a quarter note at
+    128bpm. The patch field should be a patch number, like the patch field of
+    the Instrument class.
+    '''
     def __init__(self, eTime, pitch, dur, vol=100, patch=(-1, INST)):
         self.eTime=eTime
         self.pitch=pitch
@@ -625,9 +729,16 @@ class MEvent:
     def __repr__(self):
         return str(self)
 
-# The musicToMEvents function converts a tree of Notes and Rests into an
-# event structure.
+
 def musicToMEvents(x, currentTime=0, currentInstrument=(-1,INST)):
+    '''
+    The musicToMEvents function converts a tree of Notes and Rests into an
+    event structure.
+    :param x:
+    :param currentTime:
+    :param currentInstrument:
+    :return:
+    '''
     if (x.__class__.__name__ == 'Music'):
         y = applyTempo(x) # interpret all tempo scaling factors before continuing
         return musicToMEvents(y.tree, 0, -1)
@@ -653,7 +764,7 @@ def musicToMEvents(x, currentTime=0, currentInstrument=(-1,INST)):
         elif (x.mod.__class__.__name__ == 'Instrument'):
             return musicToMEvents(x.tree, currentTime, x.mod.patch)
     else:
-        raise CustomException("Unrecognized musical structure: "+str(x))
+        raise EuterpeaException("Unrecognized musical structure: "+str(x))
 
 
 
@@ -670,14 +781,16 @@ def musicToMEvents(x, currentTime=0, currentInstrument=(-1,INST)):
 ON = 1 # note on event type
 OFF = 0 # note off event type
 
-# This is an intermediate type to aid in conversion to MIDI. A single
-# MEvent will get split into two events, an on and off event. These
-# then will need to be sorted by event time (eTime) in larger lists.
-# Field information:
-# - eTime will be either relative to the last event depending on the
-#   current step on the way to conversion to MIDI.
-# - eType should be either ON=1 or OFF=0.
 class MEventMidi:
+    '''
+    This is an intermediate type to aid in conversion to MIDI. A single
+    MEvent will get split into two events, an on and off event. These
+    will need to be sorted by event time (eTime) in larger lists.
+    Field information:
+     - eTime will be either relative to the last event depending on the
+       current step on the way to conversion to MIDI.
+     - eType should be either ON=1 or OFF=0.
+    '''
     def __init__(self, eTime, eType, pitch, vol=100, patch=-1):
         self.eTime = eTime
         self.eType = eType
@@ -691,9 +804,13 @@ class MEventMidi:
     def __repr__(self):
         return str(self)
 
-# This function is an intermediate on the way from the MEvent-style
-# representation to MIDI format.
 def mEventsToOnOff(mevs):
+    '''
+    This function is an intermediate on the way from the MEvent-style
+    representation to MIDI format.
+    :param mevs:
+    :return:
+    '''
     def f(e):
         return [MEventMidi(e.eTime, ON, e.pitch, e.vol, e.patch),
                 MEventMidi(e.eTime+e.dur, OFF, e.pitch, e.vol, e.patch)]
@@ -702,10 +819,15 @@ def mEventsToOnOff(mevs):
         onOffs = onOffs + f(e)
     return sorted(onOffs, key=lambda e: e.eTime)
 
-# This function will convert an event sequence with an eTime field into
-# a relative time stamp format (time since the last event). This is intended
-# for use with the MEventMidi type.
+
 def onOffToRelDur(evs):
+    '''
+    This function will convert an event sequence with an eTime field into
+    a relative time stamp format (time since the last event). This is intended
+    for use with the MEventMidi type.
+    :param evs:
+    :return:
+    '''
     durs = [0] + map (lambda e: e.eTime, evs)
     for i in range(0, len(evs)):
         evs[i].eTime -= durs[i]
@@ -715,11 +837,16 @@ def eventPatchList(mevs):
     patches = map (lambda e: e.patch, mevs) # extract just the patch from each note
     return list(set(patches)) # remove duplicates
 
-# A linearPatchMap assigns channels to instruments exculsively and top to bottom
-# with the exception of percussion, which will always fall on channel 9. Note that
-# this implementation allows the creation of tracks without any program changes
-# through the use of negative numbers.
+
 def linearPatchMap(patchList):
+    '''
+    A linearPatchMap assigns channels to instruments exculsively and top to bottom
+    with the exception of percussion, which will always fall on channel 9. Note that
+    this implementation allows the creation of tracks without any program changes
+    through the use of negative numbers.
+    :param patchList:
+    :return:
+    '''
     currChan = 0 # start from channel 0 and work upward
     pmap = [] # initialize patch map to be empty
     for p in patchList:
@@ -734,9 +861,15 @@ def linearPatchMap(patchList):
                 else: currChan = currChan+1 # increment channel counter
     return sorted(pmap, key = lambda x: x[1])
 
-# This function splits a list of MEvents (or MEventMidis) by their
-# patch number.
+
 def splitByPatch(mevs, pListIn=[]):
+    '''
+    This function splits a list of MEvents (or MEventMidis) by their
+    patch number.
+    :param mevs:
+    :param pListIn:
+    :return:
+    '''
     pList = []
     # did we already get a patch list?
     if len(pListIn)==0: pList = eventPatchList(mevs) # no - need to build it
@@ -769,10 +902,15 @@ def toMidiEvent(onOffMsg):
     return m
 
 
-# Converting MEvents to a MIDI file. The following function takes a music structure
-# (Music, Seq, Par, etc.) and converts it to a pythonmidi Pattern. File-writing is
-# not performed at this step.
+
 def mEventsToPattern(mevs):
+    '''
+    Converting MEvents to a MIDI file. The following function takes a music structure
+    (Music, Seq, Par, etc.) and converts it to a pythonmidi Pattern. File-writing is
+    not performed at this step.
+    :param mevs:
+    :return:
+    '''
     pattern = midi.Pattern() # Instantiate a MIDI Pattern (contains a list of tracks)
     pattern.resolution = RESOLUTION # Set the tick per beat resolution
     pList = eventPatchList(mevs) # get list of active patches
@@ -798,36 +936,14 @@ def mEventsToPattern(mevs):
     return pattern
 
 
-# Backup definition prior to adding program change event handling
-def mEventsToPatternOld(mevs):
-    pattern = midi.Pattern() # Instantiate a MIDI Pattern (contains a list of tracks)
-    pattern.resolution = RESOLUTION # Set the tick per beat resolution
-    pList = eventPatchList(mevs) # get list of active patches
-    pmap = linearPatchMap(pList) # linear patch/channel assignment
-    print pmap
-    mevsByPatch = splitByPatch(mevs, pList) # split event list by patch
-    print "Number of unique patches: ", len(mevsByPatch)
-    #for mevsP in mevsByPatch:
-    for i in range(0, len(pList)):
-        mevsP = mevsByPatch[i]
-        track = midi.Track()
-        track.append(midi.ProgramChangeEvent(value=pmap[i][0][0]))
-        mevsOnOff = mEventsToOnOff(mevsP)
-        print "On-Off: ", mevsOnOff
-        onOffToRelDur(mevsOnOff)
-        print "On-Off Rel: ", mevsOnOff
-        #print "MEVS: ", mevsOnOff
-        for e in mevsOnOff:
-            m = toMidiEvent(e)
-            track.append(m)
-        track.append(midi.EndOfTrackEvent(tick=1)) # close the track
-        pattern.append(track) # place the track in the pattern
-    print "MIDI values: ", pattern
-    return pattern
-
-# musicToMidi takes a filename (which must end in ".mid") and a music structure and writes
-# a MIDI file.
 def musicToMidi(filename, music):
+    '''
+    musicToMidi takes a filename (which must end in ".mid") and a music structure and writes
+    a MIDI file.
+    :param filename:
+    :param music:
+    :return:
+    '''
     checkMidiCompatible(music) # are the volumes and pitches within 0-127?
     e = musicToMEvents(music) # convert to MEvents
     p = mEventsToPattern(e) # convert to a pythonmidi Pattern
@@ -835,22 +951,23 @@ def musicToMidi(filename, music):
 
 
 # =============================================================================================
-# To go within PythonEuterpea.py
-# Some extra supporting functions for compatibility with some other code
+# Some extra supporting functions for compatibility with more pure vector/list
+# representations of melodies and chords.
 
 
+# Convert a pitch number to a single note.
 def pitchToNote(p, defDur=0.25, defVol=100):
     if p==None:
         return Rest(defDur)
     else:
         return Note(p, defDur, defVol)
 
-
+# Convert a list of pitches to a melody using a default note duration.
 def pitchListToMusic(ps, defDur=0.25, defVol=100):
     ns = map(pitchToNote, ps)
     return line(ns)
 
-
+# Convert a list of pitch+duration pairs to a melody (a bunch of Notes in sequence).
 def pdPairsToMusic(pds, defVol=100):
     """
     pdPair = pitch-duration pair
@@ -861,7 +978,7 @@ def pdPairsToMusic(pds, defVol=100):
     ns = map(lambda x: Note(x[0], x[1], defVol), pds)
     return line(ns)
 
-
+# Convert a list of pitches to a chord (a bunch of Notes in parallel).
 def pitchListToChord(ps, defDur=0.25, defVol=100):
     if ps == None:
         return Rest(defDur)
@@ -869,35 +986,8 @@ def pitchListToChord(ps, defDur=0.25, defVol=100):
         ns = map (lambda p: Note(p, defDur, defVol), ps)
         return chord(ns)
 
-
+# Convert a list of chords (a list of lists of pitches) to a music structure.
 def chordListToMusic(chords, defDur=0.25, defVol=100):
     cList = map(lambda x: pitchListToChord(x, defDur, defVol), chords)
     return line(cList)
 
-
-#=============================================================================================
-# Testing Area
-
-'''
-# Testing basic musical structures
-m1 = Modify(Tempo(2.0), line([Note(60, QN), Note(64,QN), Note(67,HN)]))
-m2 = Modify(Tempo(2.0), chord([Note(60, WN), Note(64,WN), Note(67,WN)]))
-m3 = Modify(Tempo(0.5), line([Note(67, QN), Note(64,QN), Note(60,HN)]))
-t1 = Seq(m1,Seq(m2, m3))
-t2 = deepcopy(t1)
-reverse(t2)
-mAll = Par(Modify(Instrument("BASS_LEAD"), t1), Modify(Instrument("OBOE"), t2))
-print(getPitches(mAll))
-invert(mAll)
-print(mAll)
-removeInstruments(mAll)
-print(mAll)
-musicToMidi("x.mid", mAll)
-'''
-
-'''
-# Testing None to Rest conversion
-chords = chordListToMusic([(60,64,67), None, (70,35,80,35,30)])
-print chords
-m = musicToMidi("chords.mid", chords)
-'''
