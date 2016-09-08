@@ -4,6 +4,9 @@
 # Persistence Files
 *.p
 
+# Mac-specific
+.DS_Store
+
 # gitignore settings for IDEs, Python, and R projects
 
 ### IDEs
