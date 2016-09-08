@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9e19ecdd-6e73-4734-b00d-d40d23efbd04" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PythonEuterpea.py" afterPath="$PROJECT_DIR$/PythonEuterpea.py" />
-    </list>
+    <list default="true" id="9e19ecdd-6e73-4734-b00d-d40d23efbd04" name="Default" comment="" />
     <ignored path="Python-Kulitta.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -33,7 +30,7 @@
       <file leaf-file-name="PostProc.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PostProc.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
+            <state relative-caret-position="476">
               <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -45,7 +42,7 @@
       <file leaf-file-name="ExampleGUI.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ExampleGUI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1425">
+            <state relative-caret-position="1615">
               <caret line="100" column="21" selection-start-line="100" selection-start-column="21" selection-end-line="100" selection-end-column="21" />
               <folding>
                 <element signature="e#0#95#0" expanded="true" />
@@ -57,7 +54,7 @@
       <file leaf-file-name="QuotientSpaces.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/QuotientSpaces.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
+            <state relative-caret-position="68">
               <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
               <folding />
             </state>
@@ -68,7 +65,7 @@
         <entry file="file://$PROJECT_DIR$/PythonEuterpea.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="375">
-              <caret line="25" column="35" selection-start-line="25" selection-start-column="35" selection-end-line="25" selection-end-column="35" />
+              <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
               <folding>
                 <element signature="e#1045#1070#0" expanded="true" />
               </folding>
@@ -89,7 +86,7 @@
       <file leaf-file-name="GMInstruments.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/GMInstruments.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
+            <state relative-caret-position="170">
               <caret line="10" column="31" selection-start-line="10" selection-start-column="31" selection-end-line="10" selection-end-column="31" />
               <folding />
             </state>
@@ -99,7 +96,7 @@
       <file leaf-file-name="Search.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Search.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1470">
+            <state relative-caret-position="1666">
               <caret line="100" column="27" selection-start-line="100" selection-start-column="27" selection-end-line="100" selection-end-column="27" />
               <folding />
             </state>
@@ -109,7 +106,7 @@
       <file leaf-file-name="PTGG.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PTGG.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1455">
+            <state relative-caret-position="1649">
               <caret line="98" column="30" selection-start-line="98" selection-start-column="30" selection-end-line="98" selection-end-column="30" />
               <folding />
             </state>
@@ -119,7 +116,7 @@
       <file leaf-file-name="ClassicalFG.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ClassicalFG.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
+            <state relative-caret-position="204">
               <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -131,7 +128,7 @@
       <file leaf-file-name="Constraints.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Constraints.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
+            <state relative-caret-position="68">
               <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
@@ -196,10 +193,10 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="25" />
-    <option name="y" value="23" />
-    <option name="width" value="1142" />
-    <option name="height" value="877" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1382" />
+    <option name="height" value="744" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -226,27 +223,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Python-Kulitta" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Python-Kulitta" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PythonKulitta" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scratches" />
       <pane id="Scope">
         <subPane subId="Project Files">
           <PATH>
@@ -351,6 +327,27 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Python-Kulitta" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Python-Kulitta" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PythonKulitta" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -372,135 +369,7 @@
       <recent name="$PROJECT_DIR$/lhs" />
     </key>
   </component>
-  <component name="RestoreUpdateTree" date="Moments ago" ActionInfo="_Update">
-    <UpdatedFiles>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Updated from server" />
-        <option name="myStatusName" value="Changed on server" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="CHANGED_ON_SERVER" />
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Updated" />
-          <option name="myStatusName" value="Changed" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="UPDATED" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/PythonEuterpea.py</PATH>
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Created" />
-          <option name="myStatusName" value="Created" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="CREATED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Deleted" />
-          <option name="myStatusName" value="Deleted" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="true" />
-          <option name="myId" value="REMOVED_FROM_REPOSITORY" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Restored" />
-          <option name="myStatusName" value="Will be restored" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="RESTORED" />
-        </FILE-GROUP>
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Modified" />
-        <option name="myStatusName" value="Modified" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MODIFIED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Skipped" />
-        <option name="myStatusName" value="Skipped" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="SKIPPED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with conflicts" />
-        <option name="myStatusName" value="Will be merged with conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_CONFLICTS" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with tree conflicts" />
-        <option name="myStatusName" value="Merged with tree conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with property conflicts" />
-        <option name="myStatusName" value="Will be merged with property conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged" />
-        <option name="myStatusName" value="Will be merged" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Not in repository" />
-        <option name="myStatusName" value="Not in repository" />
-        <option name="mySupportsDeletion" value="true" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="UNKNOWN" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Locally added" />
-        <option name="myStatusName" value="Locally added" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="LOCALLY_ADDED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Locally removed" />
-        <option name="myStatusName" value="Locally removed" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="LOCALLY_REMOVED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Switched" />
-        <option name="myStatusName" value="Switched" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="SWITCHED" />
-      </FILE-GROUP>
-    </UpdatedFiles>
-  </component>
-  <component name="RunManager" selected="Python.ExampleGUI">
-    <configuration default="false" name="Examples" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="Python-Kulitta" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Python.Examples">
     <configuration default="false" name="Demo" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -569,6 +438,24 @@
       <module name="Python-Kulitta" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ClassicalFG.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Examples" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Python27\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Python-Kulitta" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -714,16 +601,16 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Python.Examples" />
-      <item index="1" class="java.lang.String" itemvalue="Python.Demo" />
-      <item index="2" class="java.lang.String" itemvalue="Python.PostProc" />
-      <item index="3" class="java.lang.String" itemvalue="Python.ExampleGUI" />
-      <item index="4" class="java.lang.String" itemvalue="Python.ClassicalFG" />
+      <item index="0" class="java.lang.String" itemvalue="Python.Demo" />
+      <item index="1" class="java.lang.String" itemvalue="Python.PostProc" />
+      <item index="2" class="java.lang.String" itemvalue="Python.ExampleGUI" />
+      <item index="3" class="java.lang.String" itemvalue="Python.ClassicalFG" />
+      <item index="4" class="java.lang.String" itemvalue="Python.Examples" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.ExampleGUI" />
-        <item index="1" class="java.lang.String" itemvalue="Python.Examples" />
+        <item index="0" class="java.lang.String" itemvalue="Python.Examples" />
+        <item index="1" class="java.lang.String" itemvalue="Python.ExampleGUI" />
         <item index="2" class="java.lang.String" itemvalue="Python.ClassicalFG" />
         <item index="3" class="java.lang.String" itemvalue="Python.Demo" />
         <item index="4" class="java.lang.String" itemvalue="Python.PostProc" />
@@ -795,27 +682,27 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="25" y="23" width="1142" height="877" extended-state="0" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21231043" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21229868" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18980892" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18927445" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33679524" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27287066" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2621514" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3990307" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27322406" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38449112" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3990307" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -945,7 +832,7 @@
     <entry file="file://$PROJECT_DIR$/lhs/PostProc.lhs" />
     <entry file="file://$PROJECT_DIR$/PostProc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
+        <state relative-caret-position="476">
           <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -955,7 +842,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ExampleGUI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1425">
+        <state relative-caret-position="1615">
           <caret line="100" column="21" selection-start-line="100" selection-start-column="21" selection-end-line="100" selection-end-column="21" />
           <folding>
             <element signature="e#0#95#0" expanded="true" />
@@ -965,7 +852,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/QuotientSpaces.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
+        <state relative-caret-position="68">
           <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
           <folding />
         </state>
@@ -974,7 +861,7 @@
     <entry file="file://$PROJECT_DIR$/PythonEuterpea.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
-          <caret line="25" column="35" selection-start-line="25" selection-start-column="35" selection-end-line="25" selection-end-column="35" />
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
           <folding>
             <element signature="e#1045#1070#0" expanded="true" />
           </folding>
@@ -991,7 +878,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/GMInstruments.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
+        <state relative-caret-position="170">
           <caret line="10" column="31" selection-start-line="10" selection-start-column="31" selection-end-line="10" selection-end-column="31" />
           <folding />
         </state>
@@ -999,7 +886,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Search.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1470">
+        <state relative-caret-position="1666">
           <caret line="100" column="27" selection-start-line="100" selection-start-column="27" selection-end-line="100" selection-end-column="27" />
           <folding />
         </state>
@@ -1007,7 +894,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/PTGG.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1455">
+        <state relative-caret-position="1649">
           <caret line="98" column="30" selection-start-line="98" selection-start-column="30" selection-end-line="98" selection-end-column="30" />
           <folding />
         </state>
@@ -1015,7 +902,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ClassicalFG.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
+        <state relative-caret-position="204">
           <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -1025,7 +912,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Constraints.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
+        <state relative-caret-position="68">
           <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />

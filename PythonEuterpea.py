@@ -1,7 +1,7 @@
 # ===============================================================================
 # PythonEuterpea: a Python port of Haskell Euterpea's core score-level features.
 # Author: Donya Quick
-# Last modified: 02-Sept-2016
+# Last modified: 08-Sept-2016
 #
 # This file requires GMInstruments.py and the python-midi library:
 # https://github.com/vishnubob/python-midi
@@ -965,20 +965,41 @@ def pitchToNote(p, defDur=0.25, defVol=100):
 
 # Convert a list of pitches to a melody using a default note duration.
 def pitchListToMusic(ps, defDur=0.25, defVol=100):
-    ns = map(pitchToNote, ps)
+    ns = map(lambda p: pitchToNote(p, defDur, defVol), ps)
     return line(ns)
 
 
-# Convert a list of pitch+duration pairs to a melody (a bunch of Notes in sequence).
+# Synonym for consistency with some other naming schemes
+# This does the same thing as pitchListToMusic
+def pitchListToMelody(ps, defDur=0.25, defVol=100):
+    return pitchListToMusic(ps, defDur, defVol)
+
 def pdPairsToMusic(pds, defVol=100):
     """
+    Convert a list of pitch+duration pairs to a melody (a bunch of Notes in sequence).
     pdPair = pitch-duration pair
-    :param pds:
-    :param defVol:
-    :return:
+    :param pds: pairs of pitch and duration: [(p1,d1), (p2,d2), ...]
+    :param defVol: default volume
+    :return: music structure as a melody
     """
     ns = map(lambda x: Note(x[0], x[1], defVol), pds)
     return line(ns)
+
+def pdPairsToMelody(pds, defVol=100): # This is just a synonym for pdPairsToMusic
+    return pdPairsToMusic(pds, defVol)
+
+def pdPairsToChord(pds, defVol=100):
+    """
+    Convert a list of pitch+duration pairs to a chord (a bunch of Notes in parallel).
+    NOTE: start times will be the same for all pitches, but end times will be based on
+    the duration of the notes - so they may end at different times!
+    pdPair = pitch-duration pair
+    :param pds: pairs of pitch and duration: [(p1,d1), (p2,d2), ...]
+    :param defVol: default volume
+    :return: music structure as a chord
+    """
+    ns = map(lambda x: Note(x[0], x[1], defVol), pds)
+    return chord(ns)
 
 
 # Convert a list of pitches to a chord (a bunch of Notes in parallel).
