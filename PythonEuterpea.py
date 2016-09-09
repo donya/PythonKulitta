@@ -3,7 +3,7 @@
 # Author: Donya Quick
 # Last modified: 08-Sept-2016
 #
-# This file requires GMInstruments.py and the python-midi library:
+# This file requires Constants.py and the python-midi library:
 # https://github.com/vishnubob/python-midi
 #
 # Python-midi can be installed with: pip install python-midi
@@ -21,7 +21,7 @@
 
 from copy import deepcopy
 import midi  # This is the python-midi library
-from GMInstruments import *  # Bring in a bunch of GM instrument names
+from Constants import *  # Bring in a bunch of GM instrument names
 
 
 class EuterpeaException(Exception):
@@ -33,23 +33,6 @@ class EuterpeaException(Exception):
 
     def __str__(self):
         return repr(self.parameter)
-
-
-# =================================================================
-# DURATION CONSTANTS
-# =================================================================
-
-WN = 1.0        # whole note = one measure in 4/4
-DHN = 0.75      # dotted half
-HN = 0.5        # half note
-DQN = 0.375     # dotted quarter
-QN = 0.25       # quarter note
-DEN = 0.1875    # dotted eighth
-EN = 0.125      # eighth note
-DSN = 0.09375   # dotted sixteenth
-SN = 0.0625     # sixteenth note
-DTN = 0.046875  # dotted thirtysecond
-TN = 0.03125    # thirtysecond note
 
 
 # =================================================================

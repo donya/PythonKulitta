@@ -1,4 +1,23 @@
+# =================================================================
+# DURATION CONSTANTS
+# =================================================================
+
+WN = 1.0        # whole note = one measure in 4/4
+DHN = 0.75      # dotted half
+HN = 0.5        # half note
+DQN = 0.375     # dotted quarter
+QN = 0.25       # quarter note
+DEN = 0.1875    # dotted eighth
+EN = 0.125      # eighth note
+DSN = 0.09375   # dotted sixteenth
+SN = 0.0625     # sixteenth note
+DTN = 0.046875  # dotted thirtysecond
+TN = 0.03125    # thirtysecond note
+
+
+# =================================================================
 # List of GM instrument names in order of patch number.
+# =================================================================
 
 gmNames = [
     "ACOUSTIC_GRAND_PIANO", "BRIGHT_PIANO", "ELECTRIC_PIANO",
