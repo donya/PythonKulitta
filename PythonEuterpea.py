@@ -3,7 +3,7 @@
 # Author: Donya Quick
 # Last modified: 08-Sept-2016
 #
-# This file requires Constants.py and the python-midi library:
+# This file requires PEConstants.py and the python-midi library:
 # https://github.com/vishnubob/python-midi
 #
 # Python-midi can be installed with: pip install python-midi
@@ -21,7 +21,7 @@
 
 from copy import deepcopy
 import midi  # This is the python-midi library
-from Constants import *  # Bring in a bunch of GM instrument names
+from PEConstants import *  # Bring in a bunch of GM instrument names
 
 
 class EuterpeaException(Exception):
