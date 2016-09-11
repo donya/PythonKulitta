@@ -1,1 +1,2 @@
 import PythonEuterpea
+import PEConstants
