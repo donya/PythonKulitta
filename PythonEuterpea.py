@@ -1,9 +1,10 @@
 # ===============================================================================
 # PythonEuterpea: a Python port of Haskell Euterpea's core score-level features.
 # Author: Donya Quick
-# Last modified: 08-Sept-2016
+# Last modified: 30-Sept-2016
+# Last changes: in-place music manipulation functions can now be used as: x = f(x)
 #
-# This file requires PEConstants.py and the python-midi library:
+# This file requires GMInstruments.py and the python-midi library:
 # https://github.com/vishnubob/python-midi
 #
 # Python-midi can be installed with: pip install python-midi
@@ -21,7 +22,7 @@
 
 from copy import deepcopy
 import midi  # This is the python-midi library
-from PEConstants import *  # Bring in a bunch of GM instrument names
+from GMInstruments import *  # Bring in a bunch of GM instrument names
 
 
 class EuterpeaException(Exception):
@@ -33,6 +34,23 @@ class EuterpeaException(Exception):
 
     def __str__(self):
         return repr(self.parameter)
+
+
+# =================================================================
+# DURATION CONSTANTS
+# =================================================================
+
+WN = 1.0        # whole note = one measure in 4/4
+DHN = 0.75      # dotted half
+HN = 0.5        # half note
+DQN = 0.375     # dotted quarter
+QN = 0.25       # quarter note
+DEN = 0.1875    # dotted eighth
+EN = 0.125      # eighth note
+DSN = 0.09375   # dotted sixteenth
+SN = 0.0625     # sixteenth note
+DTN = 0.046875  # dotted thirtysecond
+TN = 0.03125    # thirtysecond note
 
 
 # =================================================================
@@ -64,7 +82,6 @@ class Note:
     A Euterpea Note has a pitch, duration, volume, and other possible parameters.
     (these other parameters are application-specific)
     """
-    # TODO?: store params?  Perhaps as python dictionary param: **params ?
     def __init__(self, pitch, dur=0.25, vol=100, params=None):
         self.pitch = pitch
         self.dur = dur
@@ -176,12 +193,16 @@ class Instrument:
         elif isinstance(value, basestring):
             self.name = value
             if self.name=="DRUMS":
-                self.patch = (0, itype)
+                self.patch = (0, True)
             else:
                 self.patch = (gmNames.index(self.name), itype)
+        else:
+            print "Unrecognized Instrument value: ", value
+            self.value = ""
+            self.patch = (0, False)
 
     def __str__(self):
-        return self.name + '(' + str(self.patch[0]) + ')'
+        return self.name + '(' + str(self.patch) + ')'
 
     def __repr__(self):
         return str(self)
@@ -266,18 +287,23 @@ def mMap(f, x):
     """
     if (x.__class__.__name__ == 'Music'):
         mMap(f, x.tree)
+        return x
     elif (x.__class__.__name__ == 'Note'):
         f(x)
+        return x
     elif (x.__class__.__name__ == 'Rest'):
-        pass # nothing to do to a Rest
+        return x
     elif (x.__class__.__name__ == 'Seq'):
         mMap(f, x.left)
         mMap(f, x.right)
+        return x
     elif (x.__class__.__name__ == 'Par'):
         mMap(f, x.top)
         mMap(f, x.bot)
+        return x
     elif (x.__class__.__name__ == 'Modify'):
         mMap(f, x.tree)
+        return x
     else:
         raise EuterpeaException("Unrecognized musical structure: "+str(x))
 
@@ -295,16 +321,21 @@ def mMapAll(f, x):
     """
     if (x.__class__.__name__ == 'Music'):
         mMapAll(f, x.tree)
+        return x
     elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
         f(x)
+        return x
     elif (x.__class__.__name__ == 'Seq'):
         mMapAll(f, x.left)
         mMapAll(f, x.right)
+        return x
     elif (x.__class__.__name__ == 'Par'):
         mMapAll(f, x.top)
         mMapAll(f, x.bot)
+        return x
     elif (x.__class__.__name__ == 'Modify'):
         mMapAll(f, x.tree)
+        return x
     else:
         raise EuterpeaException("Unrecognized musical structure: "+str(x))
 
@@ -319,6 +350,7 @@ def transpose(x, amount):
     """
     def f(xNote): xNote.pitch = xNote.pitch+amount
     mMap(f, x)
+    return x
 
 # The following volume-related functions deviate slightly from
 # Haskell Euterpea's methods of handling volume. This is because
@@ -330,25 +362,29 @@ def transpose(x, amount):
 
 def setVolume(x, volume): # set everything to a constant volume
     def f(xNote): xNote.vol = volume
-    mMap(f,x)
+    ret = mMap(f,x)
+    return ret
 
 def scaleVolume(x, factor): # multiply all volumes by a factor
     def f(xNote): xNote.vol = xNote.vol * factor
-    mMap (f,x)
+    ret = mMap (f,x)
+    return ret
 
 def scaleVolumeInt(x, factor): # multiply but then round to an integer
     def f(xNote): xNote.vol = int(round(xNote.vol * factor))
-    mMap (f,x)
+    ret = mMap (f,x)
+    return ret
 
 def adjustVolume(x, amount): # add a constant amount to all volumes
     def f(xNote): xNote.vol = xNote.vol + amount
-    mMap (f,x)
+    ret = mMap (f,x)
+    return ret
 
 
 def checkMidiCompatible(x):
     """
     Check whether pitch and volume values are within 0-127.
-    If they are not, an exception is thrown.
+    If they are not, an exception is thrown. There is no return value.
     :param x: the music structure to search through
     :return: nothing if successful - otherwise an exception is thrown.
     """
@@ -372,7 +408,8 @@ def forceMidiCompatible(x):
         elif xNote.vol > 127: xNote.vol = 127
         if xNote.pitch <0: xNote.pitch = 0
         elif xNote.pitch >127: xNote.pitch = 127
-    mMap (f,x)
+    ret = mMap (f,x)
+    return ret
 
 
 def reverse(x):
@@ -383,14 +420,16 @@ def reverse(x):
     """
     if (x.__class__.__name__ == 'Music'):
         reverse(x.tree)
+        return x
     elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
-        pass # nothing to do
+        return x # nothing to do
     elif (x.__class__.__name__ == 'Seq'):
         temp = x.left
         x.left = x.right
         x.right = temp
         reverse(x.left)
         reverse(x.right)
+        return x
     elif (x.__class__.__name__ == 'Par'):
         reverse(x.top)
         reverse(x.bot)
@@ -401,8 +440,10 @@ def reverse(x):
             x.top = Seq(Rest(dBot-dTop), x.top)
         elif dBot < dTop:
             x.bot = Seq(Rest(dTop-dBot), x.bot)
+        return x
     elif (x.__class__.__name__ == 'Modify'):
         reverse(x.tree)
+        return x
     else: raise EuterpeaException("Unrecognized musical structure: "+str(x))
 
 
@@ -433,9 +474,11 @@ def cut(x, amount):
     """
     if (x.__class__.__name__ == 'Music'):
         cut(x.tree, amount)
+        return x
     elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
         if amount <= x.dur:
             x.dur = amount
+        return x
     elif (x.__class__.__name__ == 'Seq'):
         dLeft = dur(x.left)
         if dLeft >= amount: # do we have enough duration on the left?
@@ -443,14 +486,17 @@ def cut(x, amount):
             x.right = Rest(0) # right side becomes nonexistent
         elif dLeft+dur(x.right) >= amount: # do we have enough duration on the right?
             cut(x.right, amount-dLeft)
+        return x
     elif (x.__class__.__name__ == 'Par'):
         cut(x.top, amount)
         cut(x.bot, amount)
+        return x
     elif (x.__class__.__name__ == 'Modify'):
         if (x.mod.__class__.__name__ == 'Tempo'):
             cut(x.tree, amount*x.mod.value)
         else:
             cut(x.tree, amount)
+        return x
     else: raise EuterpeaException("Unrecognized musical structure: " + str(x))
 
 
@@ -466,11 +512,13 @@ def remove(x, amount):
     if amount<=0: pass # nothing to remove!
     elif (x.__class__.__name__ == 'Music'):
         remove(x.tree, amount)
+        return x
     elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
         if amount >= x.dur:
             x.dur = 0
         if amount < x.dur:
             x.dur = x.dur - amount
+        return x
     elif (x.__class__.__name__ == 'Seq'):
         dLeft = dur(x.left)
         if dLeft >= amount:
@@ -478,14 +526,17 @@ def remove(x, amount):
         elif dLeft + dur(x.right) >= amount:
             x.left = Rest(0) # remove all of the left side
             remove(x.right, amount-dLeft)
+        return x
     elif (x.__class__.__name__ == 'Par'):
         remove(x.top, amount)
         remove(x.bot, amount)
+        return x
     elif (x.__class__.__name__ == 'Modify'):
         if (x.mod.__class__.__name__ == 'Tempo'):
             remove(x.tree, amount*x.mod.value)
         else:
             remove(x.tree, amount)
+        return x
     else: raise EuterpeaException("Unrecognized musical structure: " + str(x))
 
 
@@ -534,7 +585,7 @@ def firstPitch(x):
     if (x.__class__.__name__ == 'Music'):
         return firstPitch(x.tree)
     elif (x.__class__.__name__ == 'Note'):
-        return x.pitch
+        return x.pitchf
     elif (x.__class__.__name__ == 'Rest'):
         return None
     elif (x.__class__.__name__ == 'Seq'):
@@ -573,7 +624,8 @@ def invertAt(m, pitchRef):
     :return:
     """
     def f(aNote): aNote.pitch = 2 * pitchRef - aNote.pitch
-    mMap(f, m)
+    ret = mMap(f, m)
+    return ret
 
 
 def invert(m):
@@ -583,7 +635,8 @@ def invert(m):
     :return:
     """
     p = firstPitch(m)
-    invertAt(m, p)
+    ret = invertAt(m, p)
+    return ret
 
 
 def instrument(m, value):
@@ -610,33 +663,38 @@ def removeInstruments(x):
     if x.__class__.__name__ == 'Music':
         tNew = checkInstMod(x.tree)
         removeInstruments(x.tree)
+        return x
     elif x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest':
-        pass
+        return x
     elif x.__class__.__name__ == 'Seq':
         x.left = checkInstMod(x.left)
         x.right = checkInstMod(x.right)
         removeInstruments(x.left)
         removeInstruments(x.right)
+        return x
     elif x.__class__.__name__ == 'Par':
         x.top = checkInstMod(x.top)
         x.bot = checkInstMod(x.bot)
         removeInstruments(x.top)
         removeInstruments(x.bot)
+        return x
     elif x.__class__.__name__ == 'Modify':
         xNew = checkInstMod(x)
-        x = xNew
+        return xNew
     else: raise EuterpeaException("Unrecognized musical structure: " + str(x))
 
 
 def changeInstrument(m, value):
-    removeInstruments(m)
-    instrument(value, m)
+    x = removeInstruments(m)
+    x1 = instrument(value, x)
+    return x1
 
 
 # Scale all durations in a music structure by the same amount.
 def scaleDurations(m, factor):
     def f(x): x.dur = x.dur*factor
-    mMapAll(f, m)
+    x = mMapAll(f, m)
+    return x
 
 
 # =================================================================
@@ -876,12 +934,12 @@ def toMidiTick(dur):
 
 
 # Create a pythonmidi event from an MEventMidi value.
-def toMidiEvent(onOffMsg):
+def toMidiEvent(onOffMsg, chan):
     m = None
     ticks = toMidiTick(onOffMsg.eTime)
     p = int(onOffMsg.pitch)
     v = int(onOffMsg.vol)
-    if onOffMsg.eType==ON: m = midi.NoteOnEvent(tick=ticks, velocity=v, pitch=p)
+    if onOffMsg.eType==ON: m = midi.NoteOnEvent(tick=ticks, velocity=v, pitch=p, channel=chan)
     else: m = midi.NoteOffEvent(tick=ticks, velocity=v, pitch=p)
     return m
 
@@ -900,20 +958,21 @@ def mEventsToPattern(mevs):
     pmap = linearPatchMap(pList) # linear patch/channel assignment
     usedChannels = map(lambda p: p[1], pmap) # which channels are we using? (Important for drum track)
     mevsByPatch = splitByPatch(mevs, pList) # split event list by patch
-    currChan = 0; # channel counter
-    for i in range(0, len(pmap)):
+    chanInd = 0;
+    for i in range(0,16):
         track = midi.Track()
-        if currChan in usedChannels: # are we using this channel?
+        if i in usedChannels: # are we using this channel?
             # if yes, then we add events to it
-            mevsP = mevsByPatch[i] # get the relevant collection of events
-            if pmap[i][0][0] >= 0: # are we assigning an instrument?
-                track.append(midi.ProgramChangeEvent(value=pmap[i][0][0])) # set the instrument
+            mevsP = mevsByPatch[chanInd] # get the relevant collection of events
+            if pmap[chanInd][0][0] >= 0: # are we assigning an instrument?
+                print "Program change: ", pmap[chanInd][0][0], i
+                track.append(midi.ProgramChangeEvent(value=pmap[chanInd][0][0], channel = i)) # set the instrument
             mevsOnOff = mEventsToOnOff(mevsP) # convert to on/off messages
             onOffToRelDur(mevsOnOff) # convert to relative timestamps
             for e in mevsOnOff: # for each on/off event...
-                m = toMidiEvent(e) # turn it into a pythonmidi event
+                m = toMidiEvent(e, i) # turn it into a pythonmidi event
                 track.append(m) # add that event to the track
-        currChan += 1 # increment channel counter
+            chanInd = chanInd+1;
         track.append(midi.EndOfTrackEvent(tick=1)) # close the track (not optional!)
         pattern.append(track) # add the track to the pattern
     return pattern
