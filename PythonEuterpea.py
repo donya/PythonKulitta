@@ -1,7 +1,7 @@
 # ===============================================================================
 # PythonEuterpea: a Python port of Haskell Euterpea's core score-level features.
 # Author: Donya Quick
-# Last modified: 30-Sept-2016
+# Last modified: 30-Dec-2016
 # Last changes: in-place music manipulation functions can now be used as: x = f(x)
 #
 # This file requires GMInstruments.py and the python-midi library:
@@ -767,7 +767,7 @@ class MEvent:
         self.vol=vol
         self.patch=patch
     def __str__(self):
-        return "MEvent("+str(self.eTime)+","+str(self.pitch)+","+str(self.dur) +")" # +","+str(self.patch)+")"
+        return "MEvent("+str(self.eTime)+","+str(self.pitch)+","+str(self.dur) +","+str(self.patch)+")"
     def __repr__(self):
         return str(self)
 
@@ -783,7 +783,7 @@ def musicToMEvents(x, currentTime=0, currentInstrument=(-1,INST)):
     """
     if (x.__class__.__name__ == 'Music'):
         y = applyTempo(x) # interpret all tempo scaling factors before continuing
-        return musicToMEvents(y.tree, 0, -1)
+        return musicToMEvents(y.tree, 0, (-1, INST))
     elif (x.__class__.__name__ == 'Note'):
         if x.dur > 0:
             return [MEvent(currentTime, x.pitch, x.dur, x.vol, currentInstrument)] # one note = one event
@@ -965,7 +965,6 @@ def mEventsToPattern(mevs):
             # if yes, then we add events to it
             mevsP = mevsByPatch[chanInd] # get the relevant collection of events
             if pmap[chanInd][0][0] >= 0: # are we assigning an instrument?
-                print "Program change: ", pmap[chanInd][0][0], i
                 track.append(midi.ProgramChangeEvent(value=pmap[chanInd][0][0], channel = i)) # set the instrument
             mevsOnOff = mEventsToOnOff(mevsP) # convert to on/off messages
             onOffToRelDur(mevsOnOff) # convert to relative timestamps
@@ -1057,3 +1056,36 @@ def pitchListToChord(ps, defDur=0.25, defVol=100):
 def chordListToMusic(chords, defDur=0.25, defVol=100):
     cList = map(lambda x: pitchListToChord(x, defDur, defVol), chords)
     return line(cList)
+
+
+# Remove zero-duration entities
+
+def removeZeros(x):
+    if (x.__class__.__name__ == 'Music'):
+        x.tree = removeZeros(x.tree)
+        return x
+    elif (x.__class__.__name__ == 'Note' or x.__class__.__name__ == 'Rest'):
+        return x # can't remove at this stage
+    elif (x.__class__.__name__ == 'Seq'):
+        x.left = removeZeros(x.left)
+        x.right = removeZeros(x.right)
+        if (dur(x.left) <= 0):
+            return x.right
+        elif(dur(x.right) <=0):
+            return x.left
+        else:
+            return x
+    elif (x.__class__.__name__ == 'Par'):
+        x.top = removeZeros(x.top)
+        x.bot = removeZeros(x.bot)
+        if (dur(x.top) <= 0):
+            return x.bot
+        elif(dur(x.bot) <=0):
+            return x.top
+        else:
+            return x
+    elif (x.__class__.__name__ == 'Modify'):
+        x.tree = removeZeros(x.tree)
+        return x
+    else:
+        raise EuterpeaException("Unrecognized musical structure: "+str(x))
